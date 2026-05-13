@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFL 2026 Fantasy Projections</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f7f7f8;--bg3:#efefef;
+  --border:#e4e4e7;--border2:#d4d4d8;
+  --text:#18181b;--text2:#52525b;--text3:#a1a1aa;
+  --radius:8px;--radius-sm:5px;
+  --green:#1D9E75;--amber:#BA7517;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#18181b;--bg2:#27272a;--bg3:#3f3f46;
+  --border:#3f3f46;--border2:#52525b;
+  --text:#fafafa;--text2:#a1a1aa;--text3:#71717a;
+}}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+.container{max-width:1100px;margin:0 auto;padding:24px 16px}
+header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+header h1{font-size:20px;font-weight:600}
+header p{font-size:13px;color:var(--text3);margin-top:2px}
+.nav{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.nav-tab{flex:1;padding:9px 12px;font-size:13px;background:var(--bg2);color:var(--text2);border:none;cursor:pointer;border-right:1px solid var(--border);text-align:center;font-family:var(--font)}
+.nav-tab:last-child{border-right:none}
+.nav-tab.active{background:var(--bg);color:var(--text);font-weight:500}
+.nav-tab.dim{opacity:.4;cursor:not-allowed}
+.badge{font-size:10px;background:var(--bg3);color:var(--text3);border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle}
+.save-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);margin-top:4px}
+.save-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
+.save-dot.saved{background:var(--green)}
+.save-dot.saving{background:var(--amber)}
+.sum-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:600px){.sum-row{grid-template-columns:repeat(2,1fr)}}
+.sum-card{background:var(--bg2);border-radius:var(--radius);padding:12px 14px;border:1px solid var(--border)}
+.sum-lbl{font-size:11px;color:var(--text2);margin-bottom:3px}
+.sum-val{font-size:22px;font-weight:600}
+.sum-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar input,.toolbar select{font-size:13px;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg);color:var(--text);height:32px;font-family:var(--font)}
+.toolbar input{width:180px}
+.conf-pills{display:flex;gap:5px}
+.pill{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font)}
+.pill.on{background:var(--bg2);color:var(--text);border-color:var(--border2);font-weight:500}
+.btn{font-size:12px;padding:5px 12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font)}
+.btn:hover{background:var(--bg2)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:780px}
+thead th{padding:8px 10px;text-align:right;font-weight:500;font-size:11px;color:var(--text2);background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:first-child{text-align:left;min-width:160px;padding-left:12px}
+thead th:hover{color:var(--text)}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:var(--bg2)}
+tbody tr.exp td{background:var(--bg2)}
+tbody tr.detail-row td{padding:0;cursor:default}
+tbody tr.detail-row:hover td{background:transparent}
+td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+td:first-child{text-align:left;padding-left:12px}
+.team-cell{display:flex;align-items:center;gap:9px}
+.abbr-badge{width:34px;height:34px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.tname{font-size:13px;font-weight:500}
+.tmeta{font-size:10px;color:var(--text2)}
+.mod-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-left:5px;vertical-align:middle}
+.changed{color:var(--green);font-weight:500}
+.detail-inner{padding:16px;border-top:1px solid var(--border)}
+.detail-grid{display:grid;grid-template-columns:1fr 1.4fr 1.4fr;gap:16px}
+@media(max-width:700px){.detail-grid{grid-template-columns:1fr}}
+.detail-inner h4{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.htable{width:100%;font-size:11px;border-collapse:collapse}
+.htable th{color:var(--text3);font-weight:400;text-align:right;padding:2px 5px;border-bottom:1px solid var(--border)}
+.htable th:first-child{text-align:left}
+.htable td{color:var(--text2);text-align:right;padding:3px 5px}
+.htable td:first-child{color:var(--text);font-weight:500;text-align:left}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.fld{display:flex;flex-direction:column;gap:3px}
+.fld label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.fld input{font-size:13px;padding:5px 8px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg);color:var(--text);text-align:right;width:100%;font-family:var(--font)}
+.fld input:focus{outline:none;border-color:var(--text2)}
+.derived-block{background:var(--bg3);border-radius:var(--radius-sm);padding:10px;margin-bottom:10px}
+.derived-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.dchip{text-align:center;padding:4px 0}
+.dchip-val{font-size:14px;font-weight:600}
+.dchip-lbl{font-size:10px;color:var(--text3);margin-top:1px}
+.detail-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+.src-note{font-size:11px;color:var(--text3);margin-top:12px}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <h1>NFL 2026 Fantasy Projections</h1>
+      <p>Team-level offense · half-PPR superflex · click any row to edit</p>
+    </div>
+    <div class="save-bar">
+      <div class="save-dot" id="saveDot"></div>
+      <span id="saveMsg">Loading…</span>
+    </div>
+  </header>
+
+  <div class="nav">
+    <button class="nav-tab active">Team projections</button>
+    <button class="nav-tab dim">Player shares <span class="badge">next</span></button>
+    <button class="nav-tab dim">Valuation gaps <span class="badge">soon</span></button>
+  </div>
+
+  <div class="sum-row" id="sumRow"></div>
+
+  <div class="toolbar">
+    <input type="text" id="srch" placeholder="Search teams…" oninput="render()">
+    <select id="srt" onchange="render()">
+      <option value="name">Team name</option>
+      <option value="plays">Total plays ↓</option>
+      <option value="tds">Total TDs ↓</option>
+      <option value="pass_yds">Pass yards ↓</option>
+      <option value="rush_yds">Rush yards ↓</option>
+      <option value="pass_rate">Pass rate ↓</option>
+      <option value="ptd">Pass TDs ↓</option>
+      <option value="rtd">Rush TDs ↓</option>
+    </select>
+    <div class="conf-pills">
+      <button class="pill on" data-c="ALL" onclick="setConf(this)">All</button>
+      <button class="pill" data-c="AFC" onclick="setConf(this)">AFC</button>
+      <button class="pill" data-c="NFC" onclick="setConf(this)">NFC</button>
+    </div>
+    <button class="btn" onclick="resetAll()" style="margin-left:auto">Reset all</button>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th onclick="setSort('name')">Team</th>
+        <th onclick="setSort('plays')">Plays</th>
+        <th onclick="setSort('pass_att')">Pass att</th>
+        <th onclick="setSort('rush_att')">Rush att</th>
+        <th onclick="setSort('pass_yds')">Pass yds</th>
+        <th onclick="setSort('rush_yds')">Rush yds</th>
+        <th onclick="setSort('ptd')">Pass TD</th>
+        <th onclick="setSort('rtd')">Rush TD</th>
+        <th onclick="setSort('tds')">Total TD</th>
+        <th onclick="setSort('pass_rate')">Pass%</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="src-note">Source: Pro Football Reference team offense 2023–2025 (17-game seasons). Defaults = 3-year average. Projections saved locally in your browser.</div>
+</div>
+
+<script>
+const TEAMS=[
+{abbr:'ARI',name:'Arizona Cardinals',conf:'NFC',div:'West',color:'#97233F',bg:'#F5E9EB',hist:[{y:2023,pass:555,rush:471,passYds:3144,rushYds:2365,passTD:18,rushTD:17},{y:2024,pass:543,rush:463,passYds:3639,rushYds:2451,passTD:21,rushTD:11},{y:2025,pass:649,rush:366,passYds:3955,rushYds:1583,passTD:29,rushTD:9}]},
+{abbr:'ATL',name:'Atlanta Falcons',conf:'NFC',div:'South',color:'#A71930',bg:'#F5E9EB',hist:[{y:2023,pass:530,rush:495,passYds:3524,rushYds:2159,passTD:17,rushTD:14},{y:2024,pass:559,rush:495,passYds:4068,rushYds:2219,passTD:21,rushTD:18},{y:2025,pass:545,rush:477,passYds:3523,rushYds:2138,passTD:19,rushTD:17}]},
+{abbr:'BAL',name:'Baltimore Ravens',conf:'AFC',div:'North',color:'#241773',bg:'#ECEAF6',hist:[{y:2023,pass:494,rush:541,passYds:3635,rushYds:2661,passTD:27,rushTD:26},{y:2024,pass:477,rush:554,passYds:4035,rushYds:3189,passTD:41,rushTD:21},{y:2025,pass:422,rush:507,passYds:2985,rushYds:2662,passTD:23,rushTD:23}]},
+{abbr:'BUF',name:'Buffalo Bills',conf:'AFC',div:'East',color:'#00338D',bg:'#E6EBF5',hist:[{y:2023,pass:579,rush:512,passYds:4154,rushYds:2212,passTD:29,rushTD:22},{y:2024,pass:520,rush:491,passYds:3875,rushYds:2230,passTD:30,rushTD:32},{y:2025,pass:495,rush:547,passYds:3683,rushYds:2714,passTD:29,rushTD:30}]},
+{abbr:'CAR',name:'Carolina Panthers',conf:'NFC',div:'South',color:'#0085CA',bg:'#E6F3FA',hist:[{y:2023,pass:350,rush:586,passYds:2741,rushYds:1769,passTD:13,rushTD:7},{y:2024,pass:547,rush:410,passYds:3188,rushYds:1878,passTD:22,rushTD:18},{y:2025,pass:515,rush:461,passYds:3048,rushYds:1977,passTD:24,rushTD:9}]},
+{abbr:'CHI',name:'Chicago Bears',conf:'NFC',div:'North',color:'#0B162A',bg:'#E6E9EF',hist:[{y:2023,pass:513,rush:534,passYds:3096,rushYds:2399,passTD:19,rushTD:16},{y:2024,pass:566,rush:431,passYds:3086,rushYds:1734,passTD:20,rushTD:13},{y:2025,pass:574,rush:505,passYds:3826,rushYds:2456,passTD:28,rushTD:19}]},
+{abbr:'CIN',name:'Cincinnati Bengals',conf:'AFC',div:'North',color:'#FB4F14',bg:'#FDF0EB',hist:[{y:2023,pass:615,rush:383,passYds:3895,rushYds:1527,passTD:27,rushTD:12},{y:2024,pass:652,rush:380,passYds:4640,rushYds:1574,passTD:43,rushTD:11},{y:2025,pass:640,rush:381,passYds:4005,rushYds:1591,passTD:36,rushTD:11}]},
+{abbr:'CLE',name:'Cleveland Browns',conf:'AFC',div:'North',color:'#311D00',bg:'#EDE9E5',hist:[{y:2023,pass:355,rush:624,passYds:3693,rushYds:2017,passTD:24,rushTD:15},{y:2024,pass:661,rush:395,passYds:1608,rushYds:1180,passTD:19,rushTD:8},{y:2025,pass:558,rush:421,passYds:2807,rushYds:1649,passTD:16,rushTD:10}]},
+{abbr:'DAL',name:'Dallas Cowboys',conf:'NFC',div:'East',color:'#003594',bg:'#E6EBF5',hist:[{y:2023,pass:614,rush:468,passYds:4397,rushYds:1920,passTD:36,rushTD:14},{y:2024,pass:637,rush:429,passYds:3862,rushYds:1705,passTD:23,rushTD:6},{y:2025,pass:624,rush:465,passYds:4527,rushYds:2136,passTD:31,rushTD:18}]},
+{abbr:'DEN',name:'Denver Broncos',conf:'AFC',div:'West',color:'#FB4F14',bg:'#FDF0EB',hist:[{y:2023,pass:337,rush:570,passYds:3262,rushYds:1810,passTD:28,rushTD:9},{y:2024,pass:570,rush:461,passYds:3610,rushYds:1908,passTD:30,rushTD:12},{y:2025,pass:613,rush:456,passYds:3807,rushYds:2018,passTD:25,rushTD:11}]},
+{abbr:'DET',name:'Detroit Lions',conf:'NFC',div:'North',color:'#0076B6',bg:'#E6F2F9',hist:[{y:2023,pass:606,rush:500,passYds:4401,rushYds:2311,passTD:30,rushTD:27},{y:2024,pass:551,rush:534,passYds:4474,rushYds:2488,passTD:39,rushTD:29},{y:2025,pass:582,rush:442,passYds:4303,rushYds:2041,passTD:35,rushTD:21}]},
+{abbr:'GB',name:'Green Bay Packers',conf:'NFC',div:'North',color:'#203731',bg:'#EAF0EF',hist:[{y:2023,pass:374,rush:526,passYds:3807,rushYds:1905,passTD:28,rushTD:11},{y:2024,pass:479,rush:526,passYds:3807,rushYds:2496,passTD:28,rushTD:23},{y:2025,pass:489,rush:492,passYds:3617,rushYds:2037,passTD:26,rushTD:18}]},
+{abbr:'HOU',name:'Houston Texans',conf:'AFC',div:'South',color:'#03202F',bg:'#E5EAED',hist:[{y:2023,pass:372,rush:592,passYds:4173,rushYds:1647,passTD:27,rushTD:10},{y:2024,pass:570,rush:434,passYds:3526,rushYds:1909,passTD:20,rushTD:15},{y:2025,pass:582,rush:475,passYds:3707,rushYds:1852,passTD:24,rushTD:9}]},
+{abbr:'IND',name:'Indianapolis Colts',conf:'AFC',div:'South',color:'#002C5F',bg:'#E5EBEF',hist:[{y:2023,pass:355,rush:574,passYds:3666,rushYds:2059,passTD:18,rushTD:19},{y:2024,pass:513,rush:496,passYds:3361,rushYds:2331,passTD:20,rushTD:20},{y:2025,pass:547,rush:442,passYds:3873,rushYds:2007,passTD:25,rushTD:27}]},
+{abbr:'JAX',name:'Jacksonville Jaguars',conf:'AFC',div:'South',color:'#006778',bg:'#E6F1F3',hist:[{y:2023,pass:412,rush:620,passYds:4126,rushYds:1646,passTD:22,rushTD:17},{y:2024,pass:546,rush:414,passYds:3477,rushYds:1729,passTD:19,rushTD:13},{y:2025,pass:563,rush:489,passYds:3779,rushYds:1956,passTD:29,rushTD:22}]},
+{abbr:'KC',name:'Kansas City Chiefs',conf:'AFC',div:'West',color:'#E31837',bg:'#FAE8EC',hist:[{y:2023,pass:421,rush:635,passYds:4188,rushYds:1784,passTD:28,rushTD:9},{y:2024,pass:600,rush:450,passYds:3780,rushYds:1790,passTD:26,rushTD:15},{y:2025,pass:584,rush:430,passYds:3639,rushYds:1812,passTD:23,rushTD:15}]},
+{abbr:'LAC',name:'LA Chargers',conf:'AFC',div:'West',color:'#0080C6',bg:'#E6F2F9',hist:[{y:2023,pass:409,rush:632,passYds:3957,rushYds:1642,passTD:24,rushTD:11},{y:2024,pass:510,rush:463,passYds:3629,rushYds:1882,passTD:23,rushTD:17},{y:2025,pass:569,rush:466,passYds:3608,rushYds:2067,passTD:26,rushTD:10}]},
+{abbr:'LAR',name:'LA Rams',conf:'NFC',div:'West',color:'#003594',bg:'#E6EBF5',hist:[{y:2023,pass:361,rush:583,passYds:4063,rushYds:2045,passTD:26,rushTD:18},{y:2024,pass:559,rush:450,passYds:3868,rushYds:1765,passTD:22,rushTD:15},{y:2025,pass:598,rush:465,passYds:4557,rushYds:2152,passTD:46,rushTD:17}]},
+{abbr:'LV',name:'Las Vegas Raiders',conf:'AFC',div:'West',color:'#000000',bg:'#E8E8E8',hist:[{y:2023,pass:348,rush:557,passYds:3380,rushYds:1542,passTD:20,rushTD:11},{y:2024,pass:635,rush:380,passYds:3797,rushYds:1357,passTD:19,rushTD:10},{y:2025,pass:515,rush:369,passYds:2851,rushYds:1317,passTD:20,rushTD:5}]},
+{abbr:'MIA',name:'Miami Dolphins',conf:'AFC',div:'East',color:'#008E97',bg:'#E6F5F5',hist:[{y:2023,pass:566,rush:456,passYds:4514,rushYds:2308,passTD:30,rushTD:27},{y:2024,pass:591,rush:448,passYds:3737,rushYds:1795,passTD:22,rushTD:12},{y:2025,pass:479,rush:448,passYds:3068,rushYds:2044,passTD:23,rushTD:14}]},
+{abbr:'MIN',name:'Minnesota Vikings',conf:'NFC',div:'North',color:'#4F2683',bg:'#EFF0F8',hist:[{y:2023,pass:424,rush:631,passYds:4359,rushYds:1397,passTD:30,rushTD:7},{y:2024,pass:548,rush:457,passYds:4043,rushYds:1855,passTD:35,rushTD:9},{y:2025,pass:484,rush:410,passYds:2834,rushYds:1841,passTD:18,rushTD:15}]},
+{abbr:'NE',name:'New England Patriots',conf:'AFC',div:'East',color:'#002244',bg:'#E6EAF0',hist:[{y:2023,pass:351,rush:557,passYds:3069,rushYds:1627,passTD:16,rushTD:9},{y:2024,pass:529,rush:446,passYds:2995,rushYds:1969,passTD:18,rushTD:11},{y:2025,pass:502,rush:494,passYds:4258,rushYds:2191,passTD:31,rushTD:22}]},
+{abbr:'NO',name:'New Orleans Saints',conf:'NFC',div:'South',color:'#B3995D',bg:'#FAF8F3',hist:[{y:2023,pass:406,rush:606,passYds:3990,rushYds:1742,passTD:28,rushTD:13},{y:2024,pass:551,rush:444,passYds:3488,rushYds:1954,passTD:19,rushTD:15},{y:2025,pass:591,rush:435,passYds:3728,rushYds:1603,passTD:19,rushTD:9}]},
+{abbr:'NYG',name:'New York Giants',conf:'NFC',div:'East',color:'#0B2265',bg:'#E6EAF0',hist:[{y:2023,pass:323,rush:526,passYds:3474,rushYds:1874,passTD:21,rushTD:22},{y:2024,pass:591,rush:424,passYds:3228,rushYds:1783,passTD:15,rushTD:13},{y:2025,pass:526,rush:511,passYds:3474,rushYds:2195,passTD:21,rushTD:10}]},
+{abbr:'NYJ',name:'New York Jets',conf:'AFC',div:'East',color:'#125740',bg:'#E8F2EE',hist:[{y:2023,pass:356,rush:601,passYds:2919,rushYds:1647,passTD:11,rushTD:7},{y:2024,pass:607,rush:380,passYds:3714,rushYds:1561,passTD:31,rushTD:8},{y:2025,pass:494,rush:456,passYds:2385,rushYds:2096,passTD:15,rushTD:11}]},
+{abbr:'PHI',name:'Philadelphia Eagles',conf:'NFC',div:'East',color:'#004C54',bg:'#E6EFF0',hist:[{y:2023,pass:369,rush:563,passYds:3834,rushYds:2190,passTD:24,rushTD:22},{y:2024,pass:448,rush:621,passYds:3194,rushYds:3048,passTD:24,rushTD:29},{y:2025,pass:497,rush:478,passYds:3303,rushYds:1988,passTD:26,rushTD:17}]},
+{abbr:'PIT',name:'Pittsburgh Steelers',conf:'AFC',div:'North',color:'#FFB612',bg:'#FFFBE8',hist:[{y:2023,pass:323,rush:506,passYds:3163,rushYds:2010,passTD:13,rushTD:16},{y:2024,pass:499,rush:533,passYds:3264,rushYds:2166,passTD:21,rushTD:14},{y:2025,pass:550,rush:407,passYds:3440,rushYds:1756,passTD:26,rushTD:16}]},
+{abbr:'SEA',name:'Seattle Seahawks',conf:'NFC',div:'West',color:'#002244',bg:'#E6EAF0',hist:[{y:2023,pass:371,rush:575,passYds:3910,rushYds:1580,passTD:23,rushTD:11},{y:2024,pass:593,rush:383,passYds:4020,rushYds:1627,passTD:21,rushTD:17},{y:2025,pass:481,rush:507,passYds:3877,rushYds:2096,passTD:25,rushTD:19}]},
+{abbr:'SF',name:'San Francisco 49ers',conf:'NFC',div:'West',color:'#AA0000',bg:'#FAE8E8',hist:[{y:2023,pass:336,rush:491,passYds:4384,rushYds:2389,passTD:33,rushTD:27},{y:2024,pass:533,rush:457,passYds:4234,rushYds:2163,passTD:23,rushTD:17},{y:2025,pass:574,rush:481,passYds:4157,rushYds:1817,passTD:33,rushTD:15}]},
+{abbr:'TB',name:'Tampa Bay Buccaneers',conf:'NFC',div:'South',color:'#D50A0A',bg:'#FAE8E8',hist:[{y:2023,pass:364,rush:568,passYds:3812,rushYds:1509,passTD:28,rushTD:8},{y:2024,pass:571,rush:483,passYds:4257,rushYds:2536,passTD:41,rushTD:16},{y:2025,pass:558,rush:472,passYds:3500,rushYds:1947,passTD:26,rushTD:10}]},
+{abbr:'TEN',name:'Tennessee Titans',conf:'AFC',div:'South',color:'#0C2340',bg:'#E6EAF0',hist:[{y:2023,pass:304,rush:494,passYds:3067,rushYds:1846,passTD:14,rushTD:16},{y:2024,pass:530,rush:450,passYds:3317,rushYds:1855,passTD:22,rushTD:11},{y:2025,pass:570,rush:378,passYds:2824,rushYds:1589,passTD:15,rushTD:9}]},
+{abbr:'WAS',name:'Washington Commanders',conf:'NFC',div:'East',color:'#5A1414',bg:'#F0EAEA',hist:[{y:2023,pass:407,rush:636,passYds:3725,rushYds:1592,passTD:31,rushTD:14},{y:2024,pass:525,rush:526,passYds:3665,rushYds:2619,passTD:29,rushTD:25},{y:2025,pass:469,rush:484,passYds:3129,rushYds:2290,passTD:19,rushTD:20}]},
+];
+
+const KEY='nfl-proj-2026-v1';
+const proj={};
+let saveTimer=null;
+
+function defaultProj(t){
+  const avg=f=>Math.round(t.hist.reduce((s,h)=>s+h[f],0)/3);
+  const avgF=f=>parseFloat((t.hist.reduce((s,h)=>s+h[f],0)/3).toFixed(1));
+  return{rush:avg('rush'),pass:avg('pass'),rushYds:avg('rushYds'),passYds:avg('passYds'),rushTD:avgF('rushTD'),passTD:avgF('passTD'),mod:false};
+}
+
+function setSave(s,msg){
+  document.getElementById('saveDot').className='save-dot'+(s==='saved'?' saved':s==='saving'?' saving':'');
+  document.getElementById('saveMsg').textContent=msg;
+}
+
+function load(){
+  setSave('','Loading…');
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw){
+      const saved=JSON.parse(raw);
+      TEAMS.forEach(t=>{proj[t.abbr]=saved[t.abbr]?{...defaultProj(t),...saved[t.abbr]}:defaultProj(t);});
+      const n=Object.values(proj).filter(p=>p.mod).length;
+      setSave('saved',n>0?`${n} team${n>1?'s':''} modified — saved`:'Loaded — no changes yet');
+    } else {
+      TEAMS.forEach(t=>{proj[t.abbr]=defaultProj(t);});
+      setSave('saved','PFR defaults loaded — edits save automatically');
+    }
+  } catch(e){
+    TEAMS.forEach(t=>{proj[t.abbr]=defaultProj(t);});
+    setSave('','Defaults loaded');
+  }
+  render();
+}
+
+function save(){
+  setSave('saving','Saving…');
+  const s={};
+  TEAMS.forEach(t=>{if(proj[t.abbr].mod)s[t.abbr]=proj[t.abbr];});
+  try{
+    localStorage.setItem(KEY,JSON.stringify(s));
+    const n=Object.values(proj).filter(p=>p.mod).length;
+    setSave('saved',`${n} team${n!==1?'s':''} modified — saved`);
+  } catch(e){setSave('','Save failed');}
+}
+
+function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(save,800);}
+
+function derived(p){
+  const plays=p.rush+p.pass;
+  return{plays,totalTD:parseFloat((p.rushTD+p.passTD).toFixed(1)),passRate:plays>0?(p.pass/plays*100).toFixed(1):'0.0',rushYPA:p.rush>0?(p.rushYds/p.rush).toFixed(2):'0.00',passYPA:p.pass>0?(p.passYds/p.pass).toFixed(2):'0.00'};
+}
+
+let conf='ALL',sortCol='name',sortDir=1,expanded=null;
+
+function setConf(btn){document.querySelectorAll('.pill').forEach(b=>b.classList.remove('on'));btn.classList.add('on');conf=btn.dataset.c;render();}
+function setSort(col){sortDir=sortCol===col?sortDir*-1:-1;sortCol=col;render();}
+function sval(t,col){const p=proj[t.abbr],d=derived(p);return{name:t.name,plays:d.plays,pass_att:p.pass,rush_att:p.rush,pass_yds:p.passYds,rush_yds:p.rushYds,ptd:p.passTD,rtd:p.rushTD,tds:d.totalTD,pass_rate:parseFloat(d.passRate)}[col]??0;}
+
+function render(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  let list=TEAMS.filter(t=>(t.name.toLowerCase().includes(q)||t.abbr.toLowerCase().includes(q))&&(conf==='ALL'||t.conf===conf));
+  list.sort((a,b)=>{const av=sval(a,sortCol),bv=sval(b,sortCol);return typeof av==='string'?av.localeCompare(bv)*sortDir:(bv-av)*-sortDir;});
+  const tb=document.getElementById('tbody');tb.innerHTML='';
+  list.forEach(t=>{
+    const p=proj[t.abbr],d=derived(p),isExp=expanded===t.abbr;
+    const tr=document.createElement('tr');if(isExp)tr.className='exp';
+    tr.onclick=()=>{expanded=isExp?null:t.abbr;render();};
+    const c=p.mod?'changed':'';
+    tr.innerHTML=`<td><div class="team-cell"><div class="abbr-badge" style="background:${t.bg};color:${t.color}">${t.abbr}</div><div><div class="tname">${t.name}${p.mod?'<span class="mod-dot"></span>':''}</div><div class="tmeta">${t.conf} · ${t.div}</div></div></div></td><td class="${c}">${d.plays}</td><td class="${c}">${p.pass}</td><td class="${c}">${p.rush}</td><td class="${c}">${p.passYds.toLocaleString()}</td><td class="${c}">${p.rushYds.toLocaleString()}</td><td class="${c}">${p.passTD}</td><td class="${c}">${p.rushTD}</td><td class="${c}">${d.totalTD}</td><td class="${c}">${d.passRate}%</td>`;
+    tb.appendChild(tr);
+    if(isExp){const dr=document.createElement('tr');dr.className='detail-row';const td=document.createElement('td');td.colSpan=10;td.innerHTML=detail(t,p,d);dr.appendChild(td);tb.appendChild(dr);}
+  });
+  summary();
+}
+
+function detail(t,p,d){
+  const rows=t.hist.map(h=>`<tr><td>${h.y}</td><td>${h.rush+h.pass}</td><td>${h.pass}</td><td>${h.rush}</td><td>${h.passYds.toLocaleString()}</td><td>${h.rushYds.toLocaleString()}</td><td>${h.passTD}</td><td>${h.rushTD}</td></tr>`).join('');
+  return`<div class="detail-inner"><div class="detail-grid"><div><h4>History (PFR)</h4><table class="htable"><thead><tr><th>Yr</th><th>Plays</th><th>Pass</th><th>Rush</th><th>PaYds</th><th>RuYds</th><th>PTD</th><th>RTD</th></tr></thead><tbody>${rows}</tbody></table></div><div><h4>2026 Projection</h4><div class="fields"><div class="fld"><label>Pass att</label><input type="number" value="${p.pass}" onchange="upd('${t.abbr}','pass',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush att</label><input type="number" value="${p.rush}" onchange="upd('${t.abbr}','rush',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Pass yards</label><input type="number" value="${p.passYds}" onchange="upd('${t.abbr}','passYds',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush yards</label><input type="number" value="${p.rushYds}" onchange="upd('${t.abbr}','rushYds',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Pass TDs</label><input type="number" step="0.5" value="${p.passTD}" onchange="upd('${t.abbr}','passTD',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush TDs</label><input type="number" step="0.5" value="${p.rushTD}" onchange="upd('${t.abbr}','rushTD',this.value)" onclick="event.stopPropagation()"></div></div></div><div><div class="derived-block"><h4>Derived</h4><div class="derived-chips" id="dc-${t.abbr}"><div class="dchip"><div class="dchip-val">${d.plays}</div><div class="dchip-lbl">Plays</div></div><div class="dchip"><div class="dchip-val">${d.totalTD}</div><div class="dchip-lbl">Total TDs</div></div><div class="dchip"><div class="dchip-val">${d.passRate}%</div><div class="dchip-lbl">Pass rate</div></div><div class="dchip"><div class="dchip-val">${d.passYPA}</div><div class="dchip-lbl">Pass Y/A</div></div><div class="dchip"><div class="dchip-val">${d.rushYPA}</div><div class="dchip-lbl">Rush Y/A</div></div><div class="dchip"><div class="dchip-val">${(d.totalTD/d.plays*100).toFixed(2)}</div><div class="dchip-lbl">TD/100</div></div></div></div><div class="detail-actions"><button class="btn" onclick="event.stopPropagation();resetTeam('${t.abbr}')">Reset</button></div></div></div></div>`;
+}
+
+function upd(abbr,field,val){
+  proj[abbr][field]=parseFloat(val)||0;proj[abbr].mod=true;
+  const p=proj[abbr],d=derived(p);
+  const dc=document.getElementById('dc-'+abbr);
+  if(dc){const c=dc.querySelectorAll('.dchip-val');if(c[0])c[0].textContent=d.plays;if(c[1])c[1].textContent=d.totalTD;if(c[2])c[2].textContent=d.passRate+'%';if(c[3])c[3].textContent=d.passYPA;if(c[4])c[4].textContent=d.rushYPA;if(c[5])c[5].textContent=(d.totalTD/d.plays*100).toFixed(2);}
+  summary();scheduleSave();
+}
+
+function resetTeam(abbr){proj[abbr]=defaultProj(TEAMS.find(t=>t.abbr===abbr));scheduleSave();render();}
+
+function resetAll(){
+  if(!confirm('Reset all projections to defaults?'))return;
+  TEAMS.forEach(t=>{proj[t.abbr]=defaultProj(t);});
+  try{localStorage.removeItem(KEY);}catch(e){}
+  setSave('saved','Reset to defaults');render();
+}
+
+function summary(){
+  const all=TEAMS.map(t=>proj[t.abbr]);
+  const avgPlays=Math.round(all.reduce((s,p)=>s+p.rush+p.pass,0)/all.length);
+  const avgTDs=parseFloat((all.reduce((s,p)=>s+p.rushTD+p.passTD,0)/all.length).toFixed(1));
+  const avgPass=(all.reduce((s,p)=>s+p.pass/(p.rush+p.pass)*100,0)/all.length).toFixed(1);
+  const mod=all.filter(p=>p.mod).length;
+  document.getElementById('sumRow').innerHTML=`<div class="sum-card"><div class="sum-lbl">Avg total plays</div><div class="sum-val">${avgPlays}</div><div class="sum-sub">per team</div></div><div class="sum-card"><div class="sum-lbl">Avg total TDs</div><div class="sum-val">${avgTDs}</div><div class="sum-sub">rush + pass</div></div><div class="sum-card"><div class="sum-lbl">Avg pass rate</div><div class="sum-val">${avgPass}%</div><div class="sum-sub">league-wide</div></div><div class="sum-card"><div class="sum-lbl">Teams modified</div><div class="sum-val">${mod}</div><div class="sum-sub">of 32 total</div></div>`;
+}
+
+load();
+</script>
+</body>
+</html>
