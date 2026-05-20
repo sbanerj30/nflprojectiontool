@@ -202,7 +202,9 @@ td:first-child{text-align:left;padding-left:12px}
         <button class="pill" data-c="AFC" onclick="setConf(this)">AFC</button>
         <button class="pill" data-c="NFC" onclick="setConf(this)">NFC</button>
       </div>
-      <button class="btn" onclick="resetAll()" style="margin-left:auto">Reset all</button>
+      <button class="btn" onclick="document.getElementById('csvImport').click()" style="margin-left:auto">Import CSV</button>
+      <input type="file" id="csvImport" accept=".csv" style="display:none" onchange="importCSV(this)">
+      <button class="btn" onclick="resetAll()">Reset all</button>
     </div>
     <div class="tbl-wrap">
       <table>
@@ -302,38 +304,38 @@ td:first-child{text-align:left;padding-left:12px}
 <script>
 // ─── TEAM DATA ───────────────────────────────────────────────────────────────
 const TEAMS=[
-{abbr:'ARI',name:'Arizona Cardinals',conf:'NFC',div:'West',color:'#97233F',bg:'#F5E9EB',hist:[{y:2023,pass:555,rush:471,passYds:3144,rushYds:2365,passTD:18,rushTD:17},{y:2024,pass:543,rush:463,passYds:3639,rushYds:2451,passTD:21,rushTD:11},{y:2025,pass:649,rush:366,passYds:3955,rushYds:1583,passTD:29,rushTD:9}]},
-{abbr:'ATL',name:'Atlanta Falcons',conf:'NFC',div:'South',color:'#A71930',bg:'#F5E9EB',hist:[{y:2023,pass:530,rush:495,passYds:3524,rushYds:2159,passTD:17,rushTD:14},{y:2024,pass:559,rush:495,passYds:4068,rushYds:2219,passTD:21,rushTD:18},{y:2025,pass:545,rush:477,passYds:3523,rushYds:2138,passTD:19,rushTD:17}]},
-{abbr:'BAL',name:'Baltimore Ravens',conf:'AFC',div:'North',color:'#241773',bg:'#ECEAF6',hist:[{y:2023,pass:494,rush:541,passYds:3635,rushYds:2661,passTD:27,rushTD:26},{y:2024,pass:477,rush:554,passYds:4035,rushYds:3189,passTD:41,rushTD:21},{y:2025,pass:422,rush:507,passYds:2985,rushYds:2662,passTD:23,rushTD:23}]},
-{abbr:'BUF',name:'Buffalo Bills',conf:'AFC',div:'East',color:'#00338D',bg:'#E6EBF5',hist:[{y:2023,pass:579,rush:512,passYds:4154,rushYds:2212,passTD:29,rushTD:22},{y:2024,pass:520,rush:491,passYds:3875,rushYds:2230,passTD:30,rushTD:32},{y:2025,pass:495,rush:547,passYds:3683,rushYds:2714,passTD:29,rushTD:30}]},
-{abbr:'CAR',name:'Carolina Panthers',conf:'NFC',div:'South',color:'#0085CA',bg:'#E6F3FA',hist:[{y:2023,pass:350,rush:586,passYds:2741,rushYds:1769,passTD:13,rushTD:7},{y:2024,pass:547,rush:410,passYds:3188,rushYds:1878,passTD:22,rushTD:18},{y:2025,pass:515,rush:461,passYds:3048,rushYds:1977,passTD:24,rushTD:9}]},
-{abbr:'CHI',name:'Chicago Bears',conf:'NFC',div:'North',color:'#0B162A',bg:'#E6E9EF',hist:[{y:2023,pass:513,rush:534,passYds:3096,rushYds:2399,passTD:19,rushTD:16},{y:2024,pass:566,rush:431,passYds:3086,rushYds:1734,passTD:20,rushTD:13},{y:2025,pass:574,rush:505,passYds:3826,rushYds:2456,passTD:28,rushTD:19}]},
-{abbr:'CIN',name:'Cincinnati Bengals',conf:'AFC',div:'North',color:'#FB4F14',bg:'#FDF0EB',hist:[{y:2023,pass:615,rush:383,passYds:3895,rushYds:1527,passTD:27,rushTD:12},{y:2024,pass:652,rush:380,passYds:4640,rushYds:1574,passTD:43,rushTD:11},{y:2025,pass:640,rush:381,passYds:4005,rushYds:1591,passTD:36,rushTD:11}]},
-{abbr:'CLE',name:'Cleveland Browns',conf:'AFC',div:'North',color:'#311D00',bg:'#EDE9E5',hist:[{y:2023,pass:355,rush:624,passYds:3693,rushYds:2017,passTD:24,rushTD:15},{y:2024,pass:661,rush:395,passYds:1608,rushYds:1180,passTD:19,rushTD:8},{y:2025,pass:558,rush:421,passYds:2807,rushYds:1649,passTD:16,rushTD:10}]},
-{abbr:'DAL',name:'Dallas Cowboys',conf:'NFC',div:'East',color:'#003594',bg:'#E6EBF5',hist:[{y:2023,pass:614,rush:468,passYds:4397,rushYds:1920,passTD:36,rushTD:14},{y:2024,pass:637,rush:429,passYds:3862,rushYds:1705,passTD:23,rushTD:6},{y:2025,pass:624,rush:465,passYds:4527,rushYds:2136,passTD:31,rushTD:18}]},
-{abbr:'DEN',name:'Denver Broncos',conf:'AFC',div:'West',color:'#FB4F14',bg:'#FDF0EB',hist:[{y:2023,pass:337,rush:570,passYds:3262,rushYds:1810,passTD:28,rushTD:9},{y:2024,pass:570,rush:461,passYds:3610,rushYds:1908,passTD:30,rushTD:12},{y:2025,pass:613,rush:456,passYds:3807,rushYds:2018,passTD:25,rushTD:11}]},
-{abbr:'DET',name:'Detroit Lions',conf:'NFC',div:'North',color:'#0076B6',bg:'#E6F2F9',hist:[{y:2023,pass:606,rush:500,passYds:4401,rushYds:2311,passTD:30,rushTD:27},{y:2024,pass:551,rush:534,passYds:4474,rushYds:2488,passTD:39,rushTD:29},{y:2025,pass:582,rush:442,passYds:4303,rushYds:2041,passTD:35,rushTD:21}]},
-{abbr:'GB',name:'Green Bay Packers',conf:'NFC',div:'North',color:'#203731',bg:'#EAF0EF',hist:[{y:2023,pass:374,rush:526,passYds:3807,rushYds:1905,passTD:28,rushTD:11},{y:2024,pass:479,rush:526,passYds:3807,rushYds:2496,passTD:28,rushTD:23},{y:2025,pass:489,rush:492,passYds:3617,rushYds:2037,passTD:26,rushTD:18}]},
-{abbr:'HOU',name:'Houston Texans',conf:'AFC',div:'South',color:'#03202F',bg:'#E5EAED',hist:[{y:2023,pass:372,rush:592,passYds:4173,rushYds:1647,passTD:27,rushTD:10},{y:2024,pass:570,rush:434,passYds:3526,rushYds:1909,passTD:20,rushTD:15},{y:2025,pass:582,rush:475,passYds:3707,rushYds:1852,passTD:24,rushTD:9}]},
-{abbr:'IND',name:'Indianapolis Colts',conf:'AFC',div:'South',color:'#002C5F',bg:'#E5EBEF',hist:[{y:2023,pass:355,rush:574,passYds:3666,rushYds:2059,passTD:18,rushTD:19},{y:2024,pass:513,rush:496,passYds:3361,rushYds:2331,passTD:20,rushTD:20},{y:2025,pass:547,rush:442,passYds:3873,rushYds:2007,passTD:25,rushTD:27}]},
-{abbr:'JAX',name:'Jacksonville Jaguars',conf:'AFC',div:'South',color:'#006778',bg:'#E6F1F3',hist:[{y:2023,pass:412,rush:620,passYds:4126,rushYds:1646,passTD:22,rushTD:17},{y:2024,pass:546,rush:414,passYds:3477,rushYds:1729,passTD:19,rushTD:13},{y:2025,pass:563,rush:489,passYds:3779,rushYds:1956,passTD:29,rushTD:22}]},
-{abbr:'KC',name:'Kansas City Chiefs',conf:'AFC',div:'West',color:'#E31837',bg:'#FAE8EC',hist:[{y:2023,pass:421,rush:635,passYds:4188,rushYds:1784,passTD:28,rushTD:9},{y:2024,pass:600,rush:450,passYds:3780,rushYds:1790,passTD:26,rushTD:15},{y:2025,pass:584,rush:430,passYds:3639,rushYds:1812,passTD:23,rushTD:15}]},
-{abbr:'LAC',name:'LA Chargers',conf:'AFC',div:'West',color:'#0080C6',bg:'#E6F2F9',hist:[{y:2023,pass:409,rush:632,passYds:3957,rushYds:1642,passTD:24,rushTD:11},{y:2024,pass:510,rush:463,passYds:3629,rushYds:1882,passTD:23,rushTD:17},{y:2025,pass:569,rush:466,passYds:3608,rushYds:2067,passTD:26,rushTD:10}]},
-{abbr:'LAR',name:'LA Rams',conf:'NFC',div:'West',color:'#003594',bg:'#E6EBF5',hist:[{y:2023,pass:361,rush:583,passYds:4063,rushYds:2045,passTD:26,rushTD:18},{y:2024,pass:559,rush:450,passYds:3868,rushYds:1765,passTD:22,rushTD:15},{y:2025,pass:598,rush:465,passYds:4557,rushYds:2152,passTD:46,rushTD:17}]},
-{abbr:'LV',name:'Las Vegas Raiders',conf:'AFC',div:'West',color:'#000000',bg:'#E8E8E8',hist:[{y:2023,pass:348,rush:557,passYds:3380,rushYds:1542,passTD:20,rushTD:11},{y:2024,pass:635,rush:380,passYds:3797,rushYds:1357,passTD:19,rushTD:10},{y:2025,pass:515,rush:369,passYds:2851,rushYds:1317,passTD:20,rushTD:5}]},
-{abbr:'MIA',name:'Miami Dolphins',conf:'AFC',div:'East',color:'#008E97',bg:'#E6F5F5',hist:[{y:2023,pass:566,rush:456,passYds:4514,rushYds:2308,passTD:30,rushTD:27},{y:2024,pass:591,rush:448,passYds:3737,rushYds:1795,passTD:22,rushTD:12},{y:2025,pass:479,rush:448,passYds:3068,rushYds:2044,passTD:23,rushTD:14}]},
-{abbr:'MIN',name:'Minnesota Vikings',conf:'NFC',div:'North',color:'#4F2683',bg:'#EFF0F8',hist:[{y:2023,pass:424,rush:631,passYds:4359,rushYds:1397,passTD:30,rushTD:7},{y:2024,pass:548,rush:457,passYds:4043,rushYds:1855,passTD:35,rushTD:9},{y:2025,pass:484,rush:410,passYds:2834,rushYds:1841,passTD:18,rushTD:15}]},
-{abbr:'NE',name:'New England Patriots',conf:'AFC',div:'East',color:'#002244',bg:'#E6EAF0',hist:[{y:2023,pass:351,rush:557,passYds:3069,rushYds:1627,passTD:16,rushTD:9},{y:2024,pass:529,rush:446,passYds:2995,rushYds:1969,passTD:18,rushTD:11},{y:2025,pass:502,rush:494,passYds:4258,rushYds:2191,passTD:31,rushTD:22}]},
-{abbr:'NO',name:'New Orleans Saints',conf:'NFC',div:'South',color:'#B3995D',bg:'#FAF8F3',hist:[{y:2023,pass:406,rush:606,passYds:3990,rushYds:1742,passTD:28,rushTD:13},{y:2024,pass:551,rush:444,passYds:3488,rushYds:1954,passTD:19,rushTD:15},{y:2025,pass:591,rush:435,passYds:3728,rushYds:1603,passTD:19,rushTD:9}]},
-{abbr:'NYG',name:'New York Giants',conf:'NFC',div:'East',color:'#0B2265',bg:'#E6EAF0',hist:[{y:2023,pass:323,rush:526,passYds:3474,rushYds:1874,passTD:21,rushTD:22},{y:2024,pass:591,rush:424,passYds:3228,rushYds:1783,passTD:15,rushTD:13},{y:2025,pass:526,rush:511,passYds:3474,rushYds:2195,passTD:21,rushTD:10}]},
-{abbr:'NYJ',name:'New York Jets',conf:'AFC',div:'East',color:'#125740',bg:'#E8F2EE',hist:[{y:2023,pass:356,rush:601,passYds:2919,rushYds:1647,passTD:11,rushTD:7},{y:2024,pass:607,rush:380,passYds:3714,rushYds:1561,passTD:31,rushTD:8},{y:2025,pass:494,rush:456,passYds:2385,rushYds:2096,passTD:15,rushTD:11}]},
-{abbr:'PHI',name:'Philadelphia Eagles',conf:'NFC',div:'East',color:'#004C54',bg:'#E6EFF0',hist:[{y:2023,pass:369,rush:563,passYds:3834,rushYds:2190,passTD:24,rushTD:22},{y:2024,pass:448,rush:621,passYds:3194,rushYds:3048,passTD:24,rushTD:29},{y:2025,pass:497,rush:478,passYds:3303,rushYds:1988,passTD:26,rushTD:17}]},
-{abbr:'PIT',name:'Pittsburgh Steelers',conf:'AFC',div:'North',color:'#FFB612',bg:'#FFFBE8',hist:[{y:2023,pass:323,rush:506,passYds:3163,rushYds:2010,passTD:13,rushTD:16},{y:2024,pass:499,rush:533,passYds:3264,rushYds:2166,passTD:21,rushTD:14},{y:2025,pass:550,rush:407,passYds:3440,rushYds:1756,passTD:26,rushTD:16}]},
-{abbr:'SEA',name:'Seattle Seahawks',conf:'NFC',div:'West',color:'#002244',bg:'#E6EAF0',hist:[{y:2023,pass:371,rush:575,passYds:3910,rushYds:1580,passTD:23,rushTD:11},{y:2024,pass:593,rush:383,passYds:4020,rushYds:1627,passTD:21,rushTD:17},{y:2025,pass:481,rush:507,passYds:3877,rushYds:2096,passTD:25,rushTD:19}]},
-{abbr:'SF',name:'San Francisco 49ers',conf:'NFC',div:'West',color:'#AA0000',bg:'#FAE8E8',hist:[{y:2023,pass:336,rush:491,passYds:4384,rushYds:2389,passTD:33,rushTD:27},{y:2024,pass:533,rush:457,passYds:4234,rushYds:2163,passTD:23,rushTD:17},{y:2025,pass:574,rush:481,passYds:4157,rushYds:1817,passTD:33,rushTD:15}]},
-{abbr:'TB',name:'Tampa Bay Buccaneers',conf:'NFC',div:'South',color:'#D50A0A',bg:'#FAE8E8',hist:[{y:2023,pass:364,rush:568,passYds:3812,rushYds:1509,passTD:28,rushTD:8},{y:2024,pass:571,rush:483,passYds:4257,rushYds:2536,passTD:41,rushTD:16},{y:2025,pass:558,rush:472,passYds:3500,rushYds:1947,passTD:26,rushTD:10}]},
-{abbr:'TEN',name:'Tennessee Titans',conf:'AFC',div:'South',color:'#0C2340',bg:'#E6EAF0',hist:[{y:2023,pass:304,rush:494,passYds:3067,rushYds:1846,passTD:14,rushTD:16},{y:2024,pass:530,rush:450,passYds:3317,rushYds:1855,passTD:22,rushTD:11},{y:2025,pass:570,rush:378,passYds:2824,rushYds:1589,passTD:15,rushTD:9}]},
-{abbr:'WAS',name:'Washington Commanders',conf:'NFC',div:'East',color:'#5A1414',bg:'#F0EAEA',hist:[{y:2023,pass:407,rush:636,passYds:3725,rushYds:1592,passTD:31,rushTD:14},{y:2024,pass:525,rush:526,passYds:3665,rushYds:2619,passTD:29,rushTD:25},{y:2025,pass:469,rush:484,passYds:3129,rushYds:2290,passTD:19,rushTD:20}]},
+{abbr:'ARI',name:'Arizona Cardinals',conf:'NFC',div:'West',color:'#97233F',bg:'#F5E9EB',hist:[{y:2023,cmp:330,pass:555,rush:471,passYds:3144,rushYds:2365,passTD:18,rushTD:17},{y:2024,cmp:374,pass:543,rush:463,passYds:3639,rushYds:2451,passTD:21,rushTD:11},{y:2025,cmp:427,pass:649,rush:366,passYds:3955,rushYds:1583,passTD:29,rushTD:9}]},
+{abbr:'ATL',name:'Atlanta Falcons',conf:'NFC',div:'South',color:'#A71930',bg:'#F5E9EB',hist:[{y:2023,cmp:326,pass:530,rush:495,passYds:3524,rushYds:2159,passTD:17,rushTD:14},{y:2024,cmp:364,pass:559,rush:495,passYds:4068,rushYds:2219,passTD:21,rushTD:18},{y:2025,cmp:332,pass:545,rush:477,passYds:3523,rushYds:2138,passTD:19,rushTD:17}]},
+{abbr:'BAL',name:'Baltimore Ravens',conf:'AFC',div:'North',color:'#241773',bg:'#ECEAF6',hist:[{y:2023,cmp:328,pass:494,rush:541,passYds:3635,rushYds:2661,passTD:27,rushTD:26},{y:2024,cmp:318,pass:477,rush:554,passYds:4035,rushYds:3189,passTD:41,rushTD:21},{y:2025,cmp:278,pass:422,rush:507,passYds:2985,rushYds:2662,passTD:23,rushTD:23}]},
+{abbr:'BUF',name:'Buffalo Bills',conf:'AFC',div:'East',color:'#00338D',bg:'#E6EBF5',hist:[{y:2023,cmp:385,pass:579,rush:512,passYds:4154,rushYds:2212,passTD:29,rushTD:22},{y:2024,cmp:329,pass:520,rush:491,passYds:3875,rushYds:2230,passTD:30,rushTD:32},{y:2025,cmp:344,pass:495,rush:547,passYds:3683,rushYds:2714,passTD:29,rushTD:30}]},
+{abbr:'CAR',name:'Carolina Panthers',conf:'NFC',div:'South',color:'#0085CA',bg:'#E6F3FA',hist:[{y:2023,cmp:297,pass:586,rush:461,passYds:2741,rushYds:1769,passTD:13,rushTD:7},{y:2024,cmp:341,pass:547,rush:410,passYds:3188,rushYds:1878,passTD:22,rushTD:18},{y:2025,cmp:329,pass:515,rush:461,passYds:3048,rushYds:1977,passTD:24,rushTD:9}]},
+{abbr:'CHI',name:'Chicago Bears',conf:'NFC',div:'North',color:'#0B162A',bg:'#E6E9EF',hist:[{y:2023,cmp:322,pass:513,rush:534,passYds:3096,rushYds:2399,passTD:19,rushTD:16},{y:2024,cmp:353,pass:566,rush:431,passYds:3086,rushYds:1734,passTD:20,rushTD:13},{y:2025,cmp:334,pass:574,rush:505,passYds:3826,rushYds:2456,passTD:28,rushTD:19}]},
+{abbr:'CIN',name:'Cincinnati Bengals',conf:'AFC',div:'North',color:'#FB4F14',bg:'#FDF0EB',hist:[{y:2023,cmp:420,pass:615,rush:383,passYds:3895,rushYds:1527,passTD:27,rushTD:12},{y:2024,cmp:460,pass:652,rush:380,passYds:4640,rushYds:1574,passTD:43,rushTD:11},{y:2025,cmp:412,pass:640,rush:381,passYds:4005,rushYds:1591,passTD:36,rushTD:11}]},
+{abbr:'CLE',name:'Cleveland Browns',conf:'AFC',div:'North',color:'#311D00',bg:'#EDE9E5',hist:[{y:2023,cmp:325,pass:624,rush:518,passYds:3693,rushYds:2017,passTD:24,rushTD:15},{y:2024,cmp:395,pass:661,rush:395,passYds:1608,rushYds:1180,passTD:19,rushTD:8},{y:2025,cmp:323,pass:558,rush:421,passYds:2807,rushYds:1649,passTD:16,rushTD:10}]},
+{abbr:'DAL',name:'Dallas Cowboys',conf:'NFC',div:'East',color:'#003594',bg:'#E6EBF5',hist:[{y:2023,cmp:428,pass:614,rush:468,passYds:4397,rushYds:1920,passTD:36,rushTD:14},{y:2024,cmp:398,pass:637,rush:429,passYds:3862,rushYds:1705,passTD:23,rushTD:6},{y:2025,cmp:419,pass:624,rush:465,passYds:4527,rushYds:2136,passTD:31,rushTD:18}]},
+{abbr:'DEN',name:'Denver Broncos',conf:'AFC',div:'West',color:'#FB4F14',bg:'#FDF0EB',hist:[{y:2023,cmp:301,pass:570,rush:451,passYds:3262,rushYds:1810,passTD:28,rushTD:9},{y:2024,cmp:379,pass:570,rush:461,passYds:3610,rushYds:1908,passTD:30,rushTD:12},{y:2025,cmp:388,pass:613,rush:456,passYds:3807,rushYds:2018,passTD:25,rushTD:11}]},
+{abbr:'DET',name:'Detroit Lions',conf:'NFC',div:'North',color:'#0076B6',bg:'#E6F2F9',hist:[{y:2023,cmp:408,pass:606,rush:500,passYds:4401,rushYds:2311,passTD:30,rushTD:27},{y:2024,cmp:399,pass:551,rush:534,passYds:4474,rushYds:2488,passTD:39,rushTD:29},{y:2025,cmp:394,pass:582,rush:442,passYds:4303,rushYds:2041,passTD:35,rushTD:21}]},
+{abbr:'GB',name:'Green Bay Packers',conf:'NFC',div:'North',color:'#203731',bg:'#EAF0EF',hist:[{y:2023,cmp:374,pass:581,rush:526,passYds:3807,rushYds:1905,passTD:28,rushTD:11},{y:2024,cmp:308,pass:479,rush:526,passYds:3807,rushYds:2496,passTD:28,rushTD:23},{y:2025,cmp:328,pass:489,rush:492,passYds:3617,rushYds:2037,passTD:26,rushTD:18}]},
+{abbr:'HOU',name:'Houston Texans',conf:'AFC',div:'South',color:'#03202F',bg:'#E5EAED',hist:[{y:2023,cmp:372,pass:592,rush:444,passYds:4173,rushYds:1647,passTD:27,rushTD:10},{y:2024,cmp:357,pass:570,rush:434,passYds:3526,rushYds:1909,passTD:20,rushTD:15},{y:2025,cmp:364,pass:582,rush:475,passYds:3707,rushYds:1852,passTD:24,rushTD:9}]},
+{abbr:'IND',name:'Indianapolis Colts',conf:'AFC',div:'South',color:'#002C5F',bg:'#E5EBEF',hist:[{y:2023,cmp:324,pass:574,rush:479,passYds:3666,rushYds:2059,passTD:18,rushTD:19},{y:2024,cmp:289,pass:513,rush:496,passYds:3361,rushYds:2331,passTD:20,rushTD:20},{y:2025,cmp:360,pass:547,rush:442,passYds:3873,rushYds:2007,passTD:25,rushTD:27}]},
+{abbr:'JAX',name:'Jacksonville Jaguars',conf:'AFC',div:'South',color:'#006778',bg:'#E6F1F3',hist:[{y:2023,cmp:412,pass:620,rush:453,passYds:4126,rushYds:1646,passTD:22,rushTD:17},{y:2024,cmp:343,pass:546,rush:414,passYds:3477,rushYds:1729,passTD:19,rushTD:13},{y:2025,cmp:344,pass:563,rush:489,passYds:3779,rushYds:1956,passTD:29,rushTD:22}]},
+{abbr:'KC',name:'Kansas City Chiefs',conf:'AFC',div:'West',color:'#E31837',bg:'#FAE8EC',hist:[{y:2023,cmp:421,pass:635,rush:417,passYds:4188,rushYds:1784,passTD:28,rushTD:9},{y:2024,cmp:404,pass:600,rush:450,passYds:3780,rushYds:1790,passTD:26,rushTD:15},{y:2025,cmp:363,pass:584,rush:430,passYds:3639,rushYds:1812,passTD:23,rushTD:15}]},
+{abbr:'LAC',name:'LA Chargers',conf:'AFC',div:'West',color:'#0080C6',bg:'#E6F2F9',hist:[{y:2023,cmp:409,pass:632,rush:431,passYds:3957,rushYds:1642,passTD:24,rushTD:11},{y:2024,cmp:336,pass:510,rush:463,passYds:3629,rushYds:1882,passTD:23,rushTD:17},{y:2025,cmp:367,pass:569,rush:466,passYds:3608,rushYds:2067,passTD:26,rushTD:10}]},
+{abbr:'LAR',name:'LA Rams',conf:'NFC',div:'West',color:'#003594',bg:'#E6EBF5',hist:[{y:2023,cmp:361,pass:583,rush:477,passYds:4063,rushYds:2045,passTD:26,rushTD:18},{y:2024,cmp:367,pass:559,rush:450,passYds:3868,rushYds:1765,passTD:22,rushTD:15},{y:2025,cmp:388,pass:598,rush:465,passYds:4557,rushYds:2152,passTD:46,rushTD:17}]},
+{abbr:'LV',name:'Las Vegas Raiders',conf:'AFC',div:'West',color:'#000000',bg:'#E8E8E8',hist:[{y:2023,cmp:292,pass:557,rush:410,passYds:3380,rushYds:1542,passTD:20,rushTD:11},{y:2024,cmp:410,pass:635,rush:380,passYds:3797,rushYds:1357,passTD:19,rushTD:10},{y:2025,cmp:256,pass:515,rush:369,passYds:2851,rushYds:1317,passTD:20,rushTD:5}]},
+{abbr:'MIA',name:'Miami Dolphins',conf:'AFC',div:'East',color:'#008E97',bg:'#E6F5F5',hist:[{y:2023,cmp:393,pass:566,rush:456,passYds:4514,rushYds:2308,passTD:30,rushTD:27},{y:2024,cmp:413,pass:591,rush:448,passYds:3737,rushYds:1795,passTD:22,rushTD:12},{y:2025,cmp:322,pass:479,rush:448,passYds:3068,rushYds:2044,passTD:23,rushTD:14}]},
+{abbr:'MIN',name:'Minnesota Vikings',conf:'NFC',div:'North',color:'#4F2683',bg:'#EFF0F8',hist:[{y:2023,cmp:424,pass:631,rush:355,passYds:4359,rushYds:1397,passTD:30,rushTD:7},{y:2024,cmp:364,pass:548,rush:457,passYds:4043,rushYds:1855,passTD:35,rushTD:9},{y:2025,cmp:298,pass:484,rush:410,passYds:2834,rushYds:1841,passTD:18,rushTD:15}]},
+{abbr:'NE',name:'New England Patriots',conf:'AFC',div:'East',color:'#002244',bg:'#E6EAF0',hist:[{y:2023,cmp:261,pass:557,rush:415,passYds:3069,rushYds:1627,passTD:16,rushTD:9},{y:2024,cmp:342,pass:529,rush:446,passYds:2995,rushYds:1969,passTD:18,rushTD:11},{y:2025,cmp:361,pass:502,rush:494,passYds:4258,rushYds:2191,passTD:31,rushTD:22}]},
+{abbr:'NO',name:'New Orleans Saints',conf:'NFC',div:'South',color:'#B3995D',bg:'#FAF8F3',hist:[{y:2023,cmp:406,pass:606,rush:480,passYds:3990,rushYds:1742,passTD:28,rushTD:13},{y:2024,cmp:340,pass:551,rush:444,passYds:3488,rushYds:1954,passTD:19,rushTD:15},{y:2025,cmp:397,pass:591,rush:435,passYds:3728,rushYds:1603,passTD:19,rushTD:9}]},
+{abbr:'NYG',name:'New York Giants',conf:'NFC',div:'East',color:'#0B2265',bg:'#E6EAF0',hist:[{y:2023,cmp:338,pass:518,rush:526,passYds:3474,rushYds:1874,passTD:21,rushTD:22},{y:2024,cmp:366,pass:591,rush:424,passYds:3228,rushYds:1783,passTD:15,rushTD:13},{y:2025,cmp:323,pass:526,rush:511,passYds:3474,rushYds:2195,passTD:21,rushTD:10}]},
+{abbr:'NYJ',name:'New York Jets',conf:'AFC',div:'East',color:'#125740',bg:'#E8F2EE',hist:[{y:2023,cmp:356,pass:601,rush:388,passYds:2919,rushYds:1647,passTD:11,rushTD:7},{y:2024,cmp:385,pass:607,rush:380,passYds:3714,rushYds:1561,passTD:31,rushTD:8},{y:2025,cmp:272,pass:494,rush:456,passYds:2385,rushYds:2096,passTD:15,rushTD:11}]},
+{abbr:'PHI',name:'Philadelphia Eagles',conf:'NFC',div:'East',color:'#004C54',bg:'#E6EFF0',hist:[{y:2023,cmp:369,pass:563,rush:510,passYds:3834,rushYds:2190,passTD:24,rushTD:22},{y:2024,cmp:303,pass:448,rush:621,passYds:3194,rushYds:3048,passTD:24,rushTD:29},{y:2025,cmp:318,pass:497,rush:478,passYds:3303,rushYds:1988,passTD:26,rushTD:17}]},
+{abbr:'PIT',name:'Pittsburgh Steelers',conf:'AFC',div:'North',color:'#FFB612',bg:'#FFFBE8',hist:[{y:2023,cmp:287,pass:506,rush:487,passYds:3163,rushYds:2010,passTD:13,rushTD:16},{y:2024,cmp:321,pass:499,rush:533,passYds:3264,rushYds:2166,passTD:21,rushTD:14},{y:2025,cmp:365,pass:550,rush:407,passYds:3440,rushYds:1756,passTD:26,rushTD:16}]},
+{abbr:'SEA',name:'Seattle Seahawks',conf:'NFC',div:'West',color:'#002244',bg:'#E6EAF0',hist:[{y:2023,cmp:371,pass:575,rush:430,passYds:3910,rushYds:1580,passTD:23,rushTD:11},{y:2024,cmp:329,pass:593,rush:383,passYds:4020,rushYds:1627,passTD:21,rushTD:17},{y:2025,cmp:325,pass:481,rush:507,passYds:3877,rushYds:2096,passTD:25,rushTD:19}]},
+{abbr:'SF',name:'San Francisco 49ers',conf:'NFC',div:'West',color:'#AA0000',bg:'#FAE8E8',hist:[{y:2023,cmp:336,pass:491,rush:499,passYds:4384,rushYds:2389,passTD:33,rushTD:27},{y:2024,cmp:349,pass:533,rush:457,passYds:4234,rushYds:2163,passTD:23,rushTD:17},{y:2025,cmp:398,pass:574,rush:481,passYds:4157,rushYds:1817,passTD:33,rushTD:15}]},
+{abbr:'TB',name:'Tampa Bay Buccaneers',conf:'NFC',div:'South',color:'#D50A0A',bg:'#FAE8E8',hist:[{y:2023,cmp:364,pass:568,rush:430,passYds:3812,rushYds:1509,passTD:28,rushTD:8},{y:2024,cmp:408,pass:571,rush:483,passYds:4257,rushYds:2536,passTD:41,rushTD:16},{y:2025,cmp:351,pass:558,rush:472,passYds:3500,rushYds:1947,passTD:26,rushTD:10}]},
+{abbr:'TEN',name:'Tennessee Titans',conf:'AFC',div:'South',color:'#0C2340',bg:'#E6EAF0',hist:[{y:2023,cmp:298,pass:494,rush:444,passYds:3067,rushYds:1846,passTD:14,rushTD:16},{y:2024,cmp:336,pass:530,rush:450,passYds:3317,rushYds:1855,passTD:22,rushTD:11},{y:2025,cmp:340,pass:570,rush:378,passYds:2824,rushYds:1589,passTD:15,rushTD:9}]},
+{abbr:'WAS',name:'Washington Commanders',conf:'NFC',div:'East',color:'#5A1414',bg:'#F0EAEA',hist:[{y:2023,cmp:321,pass:636,rush:484,passYds:3725,rushYds:1592,passTD:31,rushTD:14},{y:2024,cmp:365,pass:525,rush:526,passYds:3665,rushYds:2619,passTD:29,rushTD:25},{y:2025,cmp:287,pass:469,rush:484,passYds:3129,rushYds:2290,passTD:19,rushTD:20}]},
 ];
 
 // ─── ROSTER DATA ───────────────────────────────────────────────────────────
@@ -642,7 +644,8 @@ let activeTab = 1;
 function defaultTeamProj(t) {
   const avg = f => Math.round(t.hist.reduce((s,h)=>s+h[f],0)/3);
   const avgF = f => parseFloat((t.hist.reduce((s,h)=>s+h[f],0)/3).toFixed(1));
-  return {rush:avg('rush'),pass:avg('pass'),rushYds:avg('rushYds'),passYds:avg('passYds'),rushTD:avgF('rushTD'),passTD:avgF('passTD'),mod:false};
+  const cmp = Math.round(t.hist.reduce((s,h)=>s+(h.cmp||Math.round(h.pass*0.655)),0)/3);
+  return {rush:avg('rush'),pass:avg('pass'),rushYds:avg('rushYds'),passYds:avg('passYds'),rushTD:avgF('rushTD'),passTD:avgF('passTD'),cmp,mod:false};
 }
 
 function defaultShares(abbr) {
@@ -804,16 +807,147 @@ function renderTab1() {
   renderSummary();
 }
 
+// Convert stored raw counts → display rates
+function ratesFromProj(p) {
+  const plays = p.pass + p.rush;
+  const passRate = plays > 0 ? parseFloat((p.pass / plays * 100).toFixed(1)) : 0;
+  // Use exact stored cmp if available, otherwise estimate
+  const cmpCount = p.cmp || Math.round(p.pass * 0.655);
+  const cmpPct = p.pass > 0 ? parseFloat((cmpCount / p.pass * 100).toFixed(1)) : 65.5;
+  const ypcActual = cmpCount > 0 ? parseFloat((p.passYds / cmpCount).toFixed(2)) : 11.5;
+  const yra = p.rush > 0 ? parseFloat((p.rushYds / p.rush).toFixed(2)) : 4.3;
+  const passTDpct = p.pass > 0 ? parseFloat((p.passTD / p.pass * 100).toFixed(2)) : 4.5;
+  const rushTDpct = p.rush > 0 ? parseFloat((p.rushTD / p.rush * 100).toFixed(2)) : 3.0;
+  const totalTD = parseFloat((p.passTD + p.rushTD).toFixed(1));
+  return { plays, passRate, cmpPct, ypcActual, yra, passTDpct, rushTDpct, totalTD };
+}
+
+// Convert rate inputs → raw counts and save
+function updTeamRates(abbr) {
+  const g = id => parseFloat(document.getElementById('r_'+abbr+'_'+id)?.value) || 0;
+  const plays    = Math.round(g('plays'));
+  const passRate = g('passRate') / 100;
+  const cmpPct   = g('cmpPct') / 100;
+  const ypc      = g('ypc');
+  const yra      = g('yra');
+  const passTDpct = g('passTDpct') / 100;
+  const rushTDpct = g('rushTDpct') / 100;
+
+  const pass    = Math.round(plays * passRate);
+  const rush    = plays - pass;
+  const passYds = Math.round(pass * cmpPct * ypc);
+  const rushYds = Math.round(rush * yra);
+  const passTD  = parseFloat((pass * passTDpct).toFixed(1));
+  const rushTD  = parseFloat((rush * rushTDpct).toFixed(1));
+
+  const cmp = Math.round(pass * cmpPct);
+  teamProj[abbr] = { ...teamProj[abbr], pass, rush, passYds, rushYds, passTD, rushTD, cmp, mod: true };
+
+  // Update derived output chips
+  const p = teamProj[abbr], d = teamDerived(p);
+  const chip = (id, val) => { const el = document.getElementById('ro_'+abbr+'_'+id); if(el) el.textContent = val; };
+  chip('passAtt', pass);
+  chip('rushAtt', rush);
+  chip('passYds', passYds.toLocaleString());
+  chip('rushYds', rushYds.toLocaleString());
+  chip('passTD', passTD);
+  chip('rushTD', rushTD);
+  chip('totalTD', d.totalTD);
+
+  // Update main table row
+  renderSummary(); scheduleSave();
+  // Re-render the main table to update summary row values
+  const tbody = document.getElementById('tbody1');
+  if(tbody) {
+    const rows = tbody.querySelectorAll('tr:not(.detail-row)');
+    rows.forEach(row => {
+      const cell = row.querySelector('.tname');
+      if(cell && cell.textContent.includes(TEAMS.find(t=>t.abbr===abbr)?.name?.split(' ')[0]||'XXXXX')) {
+        // Just re-render the whole tab to keep things in sync
+      }
+    });
+  }
+}
+
+function histRate(h, field) {
+  const plays = h.pass + h.rush;
+  if(field==='plays') return plays;
+  if(field==='passRate') return plays>0 ? (h.pass/plays*100).toFixed(1)+'%' : '—';
+  if(field==='cmpPct') {
+    return h.pass>0 && h.cmp ? (h.cmp/h.pass*100).toFixed(1)+'%' : '—';
+  }
+  if(field==='ypc') return (h.cmp&&h.cmp>0) ? (h.passYds/h.cmp).toFixed(1) : (h.pass>0 ? (h.passYds/(h.pass*0.655)).toFixed(1) : '—');
+  if(field==='yra') return h.rush>0 ? (h.rushYds/h.rush).toFixed(2) : '—';
+  if(field==='passTDpct') return h.pass>0 ? (h.passTD/h.pass*100).toFixed(2)+'%' : '—';
+  if(field==='rushTDpct') return h.rush>0 ? (h.rushTD/h.rush*100).toFixed(2)+'%' : '—';
+  if(field==='totalTD') return (h.passTD+h.rushTD).toFixed(0);
+  return '—';
+}
+
 function buildDetail(t,p,d){
-  const rows=t.hist.map(h=>`<tr><td>${h.y}</td><td>${h.rush+h.pass}</td><td>${h.pass}</td><td>${h.rush}</td><td>${h.passYds.toLocaleString()}</td><td>${h.rushYds.toLocaleString()}</td><td>${h.passTD}</td><td>${h.rushTD}</td></tr>`).join('');
-  return`<div class="detail-inner"><div class="detail-grid"><div><h4>History (PFR)</h4><table class="htable"><thead><tr><th>Yr</th><th>Plays</th><th>Pass</th><th>Rush</th><th>PaYds</th><th>RuYds</th><th>PTD</th><th>RTD</th></tr></thead><tbody>${rows}</tbody></table></div><div><h4>2026 Projection</h4><div class="fields"><div class="fld"><label>Pass att</label><input type="number" value="${p.pass}" onchange="updTeam('${t.abbr}','pass',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush att</label><input type="number" value="${p.rush}" onchange="updTeam('${t.abbr}','rush',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Pass yards</label><input type="number" value="${p.passYds}" onchange="updTeam('${t.abbr}','passYds',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush yards</label><input type="number" value="${p.rushYds}" onchange="updTeam('${t.abbr}','rushYds',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Pass TDs</label><input type="number" step="0.5" value="${p.passTD}" onchange="updTeam('${t.abbr}','passTD',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush TDs</label><input type="number" step="0.5" value="${p.rushTD}" onchange="updTeam('${t.abbr}','rushTD',this.value)" onclick="event.stopPropagation()"></div></div></div><div><div class="derived-block"><h4>Derived</h4><div class="derived-chips" id="dc-${t.abbr}"><div class="dchip"><div class="dchip-val">${d.plays}</div><div class="dchip-lbl">Plays</div></div><div class="dchip"><div class="dchip-val">${d.totalTD}</div><div class="dchip-lbl">Total TDs</div></div><div class="dchip"><div class="dchip-val">${d.passRate}%</div><div class="dchip-lbl">Pass rate</div></div><div class="dchip"><div class="dchip-val">${d.passYPA}</div><div class="dchip-lbl">Pass Y/A</div></div><div class="dchip"><div class="dchip-val">${d.rushYPA}</div><div class="dchip-lbl">Rush Y/A</div></div><div class="dchip"><div class="dchip-val">${(d.totalTD/d.plays*100).toFixed(2)}</div><div class="dchip-lbl">TD/100</div></div></div></div><div class="detail-actions"><button class="btn" onclick="event.stopPropagation();resetTeam('${t.abbr}')">Reset</button></div></div></div></div>`;
+  const r = ratesFromProj(p);
+
+  // History table — show rates
+  const fields = ['plays','passRate','cmpPct','ypc','yra','totalTD','passTDpct','rushTDpct'];
+  const labels = ['Plays','Pass%','Cmp%','Yds/Cmp','Yds/Car','Tot TDs','PTD%','RTD%'];
+  const histRows = t.hist.map(h =>
+    `<tr><td>${h.y}</td>${fields.map(f=>`<td>${histRate(h,f)}</td>`).join('')}</tr>`
+  ).join('');
+
+  // Rate input fields
+  const inp = (id, val, step, label) =>
+    `<div class="fld"><label>${label}</label><input type="number" step="${step}" value="${val}" id="r_${t.abbr}_${id}" onchange="updTeamRates('${t.abbr}')" onclick="event.stopPropagation()"></div>`;
+
+  const inputs = `<div class="fields">
+    ${inp('plays',    r.plays,       '1',    'Plays')}
+    ${inp('passRate', r.passRate,    '0.1',  'Pass rate %')}
+    ${inp('cmpPct',   r.cmpPct,      '0.1',  'Completion %')}
+    ${inp('ypc',      r.ypcActual,   '0.01', 'Yds / completion')}
+    ${inp('yra',      r.yra,         '0.01', 'Yds / rush att')}
+    ${inp('passTDpct',r.passTDpct,   '0.01', 'Pass TD %')}
+    ${inp('rushTDpct',r.rushTDpct,   '0.01', 'Rush TD %')}
+  </div>`;
+
+  // Output chips — derived raw counts
+  const oc = (id, val, lbl) =>
+    `<div class="dchip"><div class="dchip-val" id="ro_${t.abbr}_${id}">${val}</div><div class="dchip-lbl">${lbl}</div></div>`;
+
+  const chips = `
+    ${oc('passAtt', p.pass,              'Pass att')}
+    ${oc('rushAtt', p.rush,              'Rush att')}
+    ${oc('passYds', p.passYds.toLocaleString(), 'Pass yds')}
+    ${oc('rushYds', p.rushYds,           'Rush yds')}
+    ${oc('passTD',  p.passTD,            'Pass TDs')}
+    ${oc('rushTD',  p.rushTD,            'Rush TDs')}
+    ${oc('totalTD', d.totalTD,           'Total TDs')}
+  `;
+
+  return `<div class="detail-inner"><div class="detail-grid">
+    <div>
+      <h4>History (PFR)</h4>
+      <table class="htable">
+        <thead><tr><th>Yr</th>${labels.map(l=>`<th>${l}</th>`).join('')}</tr></thead>
+        <tbody>${histRows}</tbody>
+      </table>
+    </div>
+    <div>
+      <h4>2026/27 rate inputs</h4>
+      ${inputs}
+    </div>
+    <div>
+      <div class="derived-block">
+        <h4>Derived outputs</h4>
+        <div class="derived-chips">${chips}</div>
+      </div>
+      <div class="detail-actions">
+        <button class="btn" onclick="event.stopPropagation();resetTeam('${t.abbr}')">Reset</button>
+      </div>
+    </div>
+  </div></div>`;
 }
 
 function updTeam(abbr,field,val){
   teamProj[abbr][field]=parseFloat(val)||0; teamProj[abbr].mod=true;
-  const p=teamProj[abbr],d=teamDerived(p);
-  const dc=document.getElementById('dc-'+abbr);
-  if(dc){const c=dc.querySelectorAll('.dchip-val');if(c[0])c[0].textContent=d.plays;if(c[1])c[1].textContent=d.totalTD;if(c[2])c[2].textContent=d.passRate+'%';if(c[3])c[3].textContent=d.passYPA;if(c[4])c[4].textContent=d.rushYPA;if(c[5])c[5].textContent=(d.totalTD/d.plays*100).toFixed(2);}
   renderSummary(); scheduleSave();
 }
 
@@ -1057,6 +1191,137 @@ function renderRankings() {
     `;
     tb.appendChild(tr);
   });
+}
+
+
+// ─── CSV IMPORT ──────────────────────────────────────────────────────────────
+// Expected columns (case-insensitive, any order):
+// team, year, plays, pass_att, completions, pass_yds, pass_tds, rush_att, rush_yds, rush_tds
+
+const TEAM_LOOKUP = {};
+(function() {
+  const aliases = {
+    'arizona cardinals':'ARI','atlanta falcons':'ATL','baltimore ravens':'BAL',
+    'buffalo bills':'BUF','carolina panthers':'CAR','chicago bears':'CHI',
+    'cincinnati bengals':'CIN','cleveland browns':'CLE','dallas cowboys':'DAL',
+    'denver broncos':'DEN','detroit lions':'DET','green bay packers':'GB',
+    'houston texans':'HOU','indianapolis colts':'IND','jacksonville jaguars':'JAX',
+    'kansas city chiefs':'KC','los angeles chargers':'LAC','la chargers':'LAC',
+    'los angeles rams':'LAR','la rams':'LAR','las vegas raiders':'LV',
+    'miami dolphins':'MIA','minnesota vikings':'MIN','new england patriots':'NE',
+    'new orleans saints':'NO','new york giants':'NYG','new york jets':'NYJ',
+    'philadelphia eagles':'PHI','pittsburgh steelers':'PIT','seattle seahawks':'SEA',
+    'san francisco 49ers':'SF','tampa bay buccaneers':'TB','tennessee titans':'TEN',
+    'washington commanders':'WAS',
+    // also accept abbreviations directly
+    'ari':'ARI','atl':'ATL','bal':'BAL','buf':'BUF','car':'CAR','chi':'CHI',
+    'cin':'CIN','cle':'CLE','dal':'DAL','den':'DEN','det':'DET','gb':'GB',
+    'hou':'HOU','ind':'IND','jax':'JAX','kc':'KC','lac':'LAC','lar':'LAR',
+    'lv':'LV','mia':'MIA','min':'MIN','ne':'NE','no':'NO','nyg':'NYG',
+    'nyj':'NYJ','phi':'PHI','pit':'PIT','sea':'SEA','sf':'SF','tb':'TB',
+    'ten':'TEN','was':'WAS',
+  };
+  Object.assign(TEAM_LOOKUP, aliases);
+})();
+
+function importCSV(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    const lines = text.trim().split(/\r?\n/);
+    if(lines.length < 2) { alert('CSV appears empty'); return; }
+
+    // Parse header
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/[^a-z0-9_]/g,'_'));
+    const col = name => {
+      // flexible matching
+      const aliases = {
+        team:       ['team','tm','team_name'],
+        year:       ['year','yr','season'],
+        plays:      ['plays','ply','total_plays','num_plays'],
+        pass_att:   ['pass_att','pass_attempts','att','pass_att','passing_att'],
+        completions:['completions','cmp','comp'],
+        pass_yds:   ['pass_yds','pass_yards','passing_yds','passing_yards','yds'],
+        pass_tds:   ['pass_tds','pass_td','passing_tds','passing_td','ptd'],
+        rush_att:   ['rush_att','rush_attempts','rush_att','rushing_att'],
+        rush_yds:   ['rush_yds','rush_yards','rushing_yds','rushing_yards'],
+        rush_tds:   ['rush_tds','rush_td','rushing_tds','rushing_td','rtd'],
+      };
+      const opts = aliases[name] || [name];
+      for(const opt of opts) {
+        const idx = headers.indexOf(opt);
+        if(idx !== -1) return idx;
+      }
+      return -1;
+    };
+
+    const required = ['team','year','pass_att','completions','pass_yds','pass_tds','rush_att','rush_yds','rush_tds'];
+    const missing = required.filter(f => col(f) === -1);
+    if(missing.length) {
+      alert('CSV missing columns: ' + missing.join(', ') + '\n\nHeaders found: ' + headers.join(', '));
+      return;
+    }
+
+    let updated = 0, skipped = 0, errors = [];
+
+    for(let i = 1; i < lines.length; i++) {
+      const row = lines[i].split(',').map(v => v.trim());
+      if(row.length < 3) continue;
+
+      const teamRaw = row[col('team')]?.toLowerCase().trim();
+      const abbr = TEAM_LOOKUP[teamRaw];
+      if(!abbr) { errors.push(`Row ${i+1}: unknown team "${row[col('team')]}"`); skipped++; continue; }
+
+      const year = parseInt(row[col('year')]);
+      if(![2023,2024,2025].includes(year)) { skipped++; continue; }
+
+      const passAtt = parseInt(row[col('pass_att')]) || 0;
+      const cmp     = parseInt(row[col('completions')]) || 0;
+      const passYds = parseInt(row[col('pass_yds')]) || 0;
+      const passTD  = parseFloat(row[col('pass_tds')]) || 0;
+      const rushAtt = parseInt(row[col('rush_att')]) || 0;
+      const rushYds = parseInt(row[col('rush_yds')]) || 0;
+      const rushTD  = parseFloat(row[col('rush_tds')]) || 0;
+
+      // Update the hist entry for this team/year
+      const team = TEAMS.find(t => t.abbr === abbr);
+      if(!team) { skipped++; continue; }
+      const histEntry = team.hist.find(h => h.y === year);
+      if(!histEntry) { skipped++; continue; }
+
+      histEntry.cmp     = cmp;
+      histEntry.pass    = passAtt;
+      histEntry.rush    = rushAtt;
+      histEntry.passYds = passYds;
+      histEntry.rushYds = rushYds;
+      histEntry.passTD  = passTD;
+      histEntry.rushTD  = rushTD;
+      updated++;
+    }
+
+    // Reset all projections to new defaults
+    TEAMS.forEach(t => {
+      if(!teamProj[t.abbr]?.mod) {
+        teamProj[t.abbr] = defaultTeamProj(t);
+      }
+    });
+
+    renderTab1();
+    renderTeamList();
+    if(selectedTeam) renderPlayerShares(selectedTeam);
+    if(activeTab === 3) renderRankings();
+
+    let msg = `Imported ${updated} team-season records.`;
+    if(skipped) msg += ` Skipped ${skipped} rows.`;
+    if(errors.length) msg += '\n\nWarnings:\n' + errors.slice(0,5).join('\n');
+    alert(msg);
+
+    // Reset file input so same file can be re-imported
+    input.value = '';
+  };
+  reader.readAsText(file);
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
