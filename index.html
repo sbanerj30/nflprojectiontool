@@ -147,12 +147,15 @@ td:first-child{text-align:left;padding-left:12px}
 .pos-share-total.ok{color:var(--green)}
 .player-row{display:grid;align-items:center;padding:6px 12px;border-bottom:1px solid var(--border);gap:8px}
 .player-row:last-child{border-bottom:none}
-.player-row.qb-row{grid-template-columns:1fr 80px 80px 80px 80px}
-.player-row.rb-row{grid-template-columns:1fr 70px 70px 70px 70px 80px 80px 80px}
-.player-row.wr-row{grid-template-columns:1fr 70px 80px 80px 80px}
-.player-row.te-row{grid-template-columns:1fr 70px 80px 80px 80px}
+.player-row.qb-row{grid-template-columns:minmax(120px,1fr) 80px 80px 80px 80px}
+.player-row.rb-row{grid-template-columns:minmax(120px,1fr) 70px 70px 70px 70px 80px 80px 80px}
+.player-row.wr-row{grid-template-columns:minmax(120px,1fr) 70px 80px 80px 80px}
+.player-row.te-row{grid-template-columns:minmax(120px,1fr) 70px 80px 80px 80px}
 .player-row.header-row{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;background:var(--bg2)}
 .player-name{font-size:12px;font-weight:500}
+.name-input{font-size:12px;font-weight:500;border:none;background:transparent;color:var(--text);font-family:var(--font);width:100%;padding:0;cursor:text;}
+.name-input:hover{background:var(--bg3);border-radius:3px;padding:0 3px;margin:0 -3px;}
+.name-input:focus{outline:none;background:var(--bg3);border-radius:3px;padding:0 3px;margin:0 -3px;}
 .player-depth{font-size:10px;color:var(--text3)}
 .share-input{width:100%;font-size:12px;padding:3px 6px;border-radius:4px;border:1px solid var(--border2);background:var(--bg);color:var(--text);text-align:right;font-family:var(--font)}
 .share-input:focus{outline:none;border-color:var(--blue)}
@@ -722,7 +725,8 @@ function calcPlayerStats(abbr) {
     const rushYds = Math.round(tp.rushYds * (sh.rushShare||0) / 100);
     const rushTD = parseFloat((tp.rushTD * (sh.rushShare||0) / 100).toFixed(1));
     const fpts = calcFpts({passYds,passTD,rushYds,rushTD});
-    result.QB.push({...pl, passAtt, passYds, passTD, rushAtt, rushYds, rushTD, fpts, sh});
+    const nameQB = sp.QB[i]?.name || pl.name;
+    result.QB.push({...pl, name:nameQB, passAtt, passYds, passTD, rushAtt, rushYds, rushTD, fpts, sh});
   });
 
   // RB
@@ -736,7 +740,8 @@ function calcPlayerStats(abbr) {
     const recYds = Math.round(rec * 7.5);
     const recTD = parseFloat((tp.passTD * (sh.recShare||0) / 100 * 0.15).toFixed(1));
     const fpts = calcFpts({rushYds,rushTD,rec,recYds,recTD});
-    result.RB.push({...pl, rushAtt, rushYds, rushTD, rec, recYds, recTD, fpts, sh});
+    const nameRB = sp.RB[i]?.name || pl.name;
+    result.RB.push({...pl, name:nameRB, rushAtt, rushYds, rushTD, rec, recYds, recTD, fpts, sh});
   });
 
   // WR
@@ -747,7 +752,8 @@ function calcPlayerStats(abbr) {
     const recYds = Math.round(rec * 13.5);
     const recTD = parseFloat((tp.passTD * (sh.recShare||0) / 100 * 0.72).toFixed(1));
     const fpts = calcFpts({rec,recYds,recTD}, false);
-    result.WR.push({...pl, tgts, rec, recYds, recTD, fpts, sh});
+    const nameWR = sp.WR[i]?.name || pl.name;
+    result.WR.push({...pl, name:nameWR, tgts, rec, recYds, recTD, fpts, sh});
   });
 
   // TE
@@ -758,7 +764,8 @@ function calcPlayerStats(abbr) {
     const recYds = Math.round(rec * 11.2);
     const recTD = parseFloat((tp.passTD * (sh.recShare||0) / 100 * 0.55).toFixed(1));
     const fpts = calcFpts({rec,recYds,recTD}, true);
-    result.TE.push({...pl, tgts, rec, recYds, recTD, fpts, sh});
+    const nameTE = sp.TE[i]?.name || pl.name;
+    result.TE.push({...pl, name:nameTE, tgts, rec, recYds, recTD, fpts, sh});
   });
 
   return result;
@@ -984,6 +991,16 @@ function renderTeamList() {
   });
 }
 
+function updPlayerName(abbr, pos, idx, val) {
+  if(!shareProj[abbr]) return;
+  if(!shareProj[abbr][pos][idx]) shareProj[abbr][pos][idx] = {};
+  shareProj[abbr][pos][idx].name = val.trim();
+  // Don't re-render the whole panel (would lose focus) — just update rankings if open
+  if(activeTab === 3) renderRankings();
+  renderTeamList();
+  scheduleSave();
+}
+
 function updShare(abbr, pos, idx, field, val) {
   shareProj[abbr][pos][idx][field] = parseFloat(val)||0;
   renderPlayerShares(abbr);
@@ -1027,7 +1044,7 @@ function renderPlayerShares(abbr) {
     <div class="player-row qb-row header-row"><div>Player</div><div style="text-align:right">Pass%</div><div style="text-align:right">Rush%</div><div style="text-align:right">Pass yds</div><div style="text-align:right">Fpts</div></div>`;
   stats.QB.forEach((p,i)=>{
     html+=`<div class="player-row qb-row">
-      <div><div class="player-name">${p.name}</div><div class="player-depth">QB${p.depth}</div></div>
+      <div><input class="name-input" type="text" value="${p.name}" onchange="updPlayerName('${abbr}','QB',${i},this.value)" onclick="event.stopPropagation()" title="Click to edit player name"><div class="player-depth">QB${p.depth}</div></div>
       <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.passShare||0}" onchange="updShare('${abbr}','QB',${i},'passShare',this.value)"></div>
       <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.rushShare||0}" onchange="updShare('${abbr}','QB',${i},'rushShare',this.value)"></div>
       <div class="proj-val ${p.fpts>0?'highlight':''}">${p.passYds.toLocaleString()}</div>
@@ -1045,7 +1062,7 @@ function renderPlayerShares(abbr) {
     <div class="player-row rb-row header-row"><div>Player</div><div style="text-align:right">Rush%</div><div style="text-align:right">Rec%</div><div style="text-align:right">Carries</div><div style="text-align:right">Rush yds</div><div style="text-align:right">Rec</div><div style="text-align:right">Rec yds</div><div style="text-align:right">Fpts</div></div>`;
   stats.RB.forEach((p,i)=>{
     html+=`<div class="player-row rb-row">
-      <div><div class="player-name">${p.name}</div><div class="player-depth">RB${p.depth}</div></div>
+      <div><input class="name-input" type="text" value="${p.name}" onchange="updPlayerName('${abbr}','RB',${i},this.value)" onclick="event.stopPropagation()" title="Click to edit player name"><div class="player-depth">RB${p.depth}</div></div>
       <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.rushShare||0}" onchange="updShare('${abbr}','RB',${i},'rushShare',this.value)"></div>
       <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.recShare||0}" onchange="updShare('${abbr}','RB',${i},'recShare',this.value)"></div>
       <div class="proj-val">${p.rushAtt}</div>
@@ -1065,7 +1082,7 @@ function renderPlayerShares(abbr) {
     <div class="player-row wr-row header-row"><div>Player</div><div style="text-align:right">Tgt%</div><div style="text-align:right">Targets</div><div style="text-align:right">Rec yds</div><div style="text-align:right">Fpts</div></div>`;
   stats.WR.forEach((p,i)=>{
     html+=`<div class="player-row wr-row">
-      <div><div class="player-name">${p.name}</div><div class="player-depth">WR${p.depth}</div></div>
+      <div><input class="name-input" type="text" value="${p.name}" onchange="updPlayerName('${abbr}','WR',${i},this.value)" onclick="event.stopPropagation()" title="Click to edit player name"><div class="player-depth">WR${p.depth}</div></div>
       <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.recShare||0}" onchange="updShare('${abbr}','WR',${i},'recShare',this.value)"></div>
       <div class="proj-val">${p.tgts}</div>
       <div class="proj-val ${p.recYds>0?'highlight':''}">${p.recYds}</div>
@@ -1082,7 +1099,7 @@ function renderPlayerShares(abbr) {
     <div class="player-row te-row header-row"><div>Player</div><div style="text-align:right">Tgt%</div><div style="text-align:right">Targets</div><div style="text-align:right">Rec yds</div><div style="text-align:right">Fpts</div></div>`;
   stats.TE.forEach((p,i)=>{
     html+=`<div class="player-row te-row">
-      <div><div class="player-name">${p.name}</div><div class="player-depth">TE${p.depth}</div></div>
+      <div><input class="name-input" type="text" value="${p.name}" onchange="updPlayerName('${abbr}','TE',${i},this.value)" onclick="event.stopPropagation()" title="Click to edit player name"><div class="player-depth">TE${p.depth}</div></div>
       <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.recShare||0}" onchange="updShare('${abbr}','TE',${i},'recShare',this.value)"></div>
       <div class="proj-val">${p.tgts}</div>
       <div class="proj-val ${p.recYds>0?'highlight':''}">${p.recYds}</div>
