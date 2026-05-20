@@ -11,7 +11,7 @@
   --border:#e4e4e7;--border2:#d4d4d8;
   --text:#18181b;--text2:#52525b;--text3:#a1a1aa;
   --radius:8px;--radius-sm:5px;
-  --green:#1D9E75;--amber:#BA7517;
+  --green:#1D9E75;--amber:#BA7517;--red:#dc2626;--blue:#2563eb;
   --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 @media(prefers-color-scheme:dark){:root{
@@ -20,20 +20,22 @@
   --text:#fafafa;--text2:#a1a1aa;--text3:#71717a;
 }}
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
-.container{max-width:1100px;margin:0 auto;padding:24px 16px}
+.container{max-width:1200px;margin:0 auto;padding:24px 16px}
 header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
 header h1{font-size:20px;font-weight:600}
 header p{font-size:13px;color:var(--text3);margin-top:2px}
+.save-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);margin-top:4px}
+.save-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
+.save-dot.saved{background:var(--green)}.save-dot.saving{background:var(--amber)}
 .nav{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
-.nav-tab{flex:1;padding:9px 12px;font-size:13px;background:var(--bg2);color:var(--text2);border:none;cursor:pointer;border-right:1px solid var(--border);text-align:center;font-family:var(--font)}
+.nav-tab{flex:1;padding:9px 12px;font-size:13px;background:var(--bg2);color:var(--text2);border:none;cursor:pointer;border-right:1px solid var(--border);text-align:center;font-family:var(--font);transition:background .1s}
 .nav-tab:last-child{border-right:none}
 .nav-tab.active{background:var(--bg);color:var(--text);font-weight:500}
 .nav-tab.dim{opacity:.4;cursor:not-allowed}
 .badge{font-size:10px;background:var(--bg3);color:var(--text3);border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:middle}
-.save-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);margin-top:4px}
-.save-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:background .3s}
-.save-dot.saved{background:var(--green)}
-.save-dot.saving{background:var(--amber)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* ── SHARED ── */
 .sum-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
 @media(max-width:600px){.sum-row{grid-template-columns:repeat(2,1fr)}}
 .sum-card{background:var(--bg2);border-radius:var(--radius);padding:12px 14px;border:1px solid var(--border)}
@@ -49,9 +51,9 @@ header p{font-size:13px;color:var(--text3);margin-top:2px}
 .btn{font-size:12px;padding:5px 12px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font)}
 .btn:hover{background:var(--bg2)}
 .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:780px}
+table{width:100%;border-collapse:collapse;font-size:12px}
 thead th{padding:8px 10px;text-align:right;font-weight:500;font-size:11px;color:var(--text2);background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
-thead th:first-child{text-align:left;min-width:160px;padding-left:12px}
+thead th:first-child{text-align:left;padding-left:12px}
 thead th:hover{color:var(--text)}
 tbody tr{cursor:pointer}
 tbody tr:hover td{background:var(--bg2)}
@@ -66,6 +68,9 @@ td:first-child{text-align:left;padding-left:12px}
 .tmeta{font-size:10px;color:var(--text2)}
 .mod-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-left:5px;vertical-align:middle}
 .changed{color:var(--green);font-weight:500}
+.src-note{font-size:11px;color:var(--text3);margin-top:12px}
+
+/* ── TAB 1 DETAIL ── */
 .detail-inner{padding:16px;border-top:1px solid var(--border)}
 .detail-grid{display:grid;grid-template-columns:1fr 1.4fr 1.4fr;gap:16px}
 @media(max-width:700px){.detail-grid{grid-template-columns:1fr}}
@@ -86,7 +91,76 @@ td:first-child{text-align:left;padding-left:12px}
 .dchip-val{font-size:14px;font-weight:600}
 .dchip-lbl{font-size:10px;color:var(--text3);margin-top:1px}
 .detail-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
-.src-note{font-size:11px;color:var(--text3);margin-top:12px}
+
+
+/* ── TAB 3 PLAYER RANKINGS ── */
+.scoring-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px}
+.scoring-bar label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-right:4px}
+.seg-ctrl{display:flex;border:1px solid var(--border2);border-radius:var(--radius-sm);overflow:hidden}
+.seg-btn{font-size:12px;padding:4px 10px;background:transparent;border:none;cursor:pointer;color:var(--text2);font-family:var(--font);white-space:nowrap}
+.seg-btn.on{background:var(--bg);color:var(--text);font-weight:500}
+.seg-ctrl .seg-btn:not(:last-child){border-right:1px solid var(--border2)}
+.te-bonus-wrap{display:flex;align-items:center;gap:6px}
+.te-bonus-input{width:58px;font-size:12px;padding:3px 6px;border-radius:4px;border:1px solid var(--border2);background:var(--bg);color:var(--text);text-align:right;font-family:var(--font)}
+.rankings-tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
+.rankings-tbl-wrap table{min-width:560px}
+.rank-num{font-size:12px;color:var(--text3);text-align:right}
+.pos-tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;min-width:28px;text-align:center}
+.pos-tag.QB{background:#FEF3C7;color:#92400E}
+.pos-tag.RB{background:#D1FAE5;color:#065F46}
+.pos-tag.WR{background:#DBEAFE;color:#1E40AF}
+.pos-tag.TE{background:#EDE9FE;color:#5B21B6}
+@media(prefers-color-scheme:dark){
+  .pos-tag.QB{background:#451A03;color:#FCD34D}
+  .pos-tag.RB{background:#022C22;color:#6EE7B7}
+  .pos-tag.WR{background:#1E3A5F;color:#93C5FD}
+  .pos-tag.TE{background:#2E1065;color:#C4B5FD}
+}
+.fpts-big{font-size:13px;font-weight:600;color:var(--text)}
+.pos-rank-badge{font-size:11px;color:var(--text3)}
+.team-tag{font-size:11px;color:var(--text2)}
+
+/* ── TAB 2 PLAYER SHARES ── */
+.ps-layout{display:grid;grid-template-columns:220px 1fr;gap:16px;min-height:600px}
+@media(max-width:800px){.ps-layout{grid-template-columns:1fr}}
+.team-list{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.team-list-item{display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px}
+.team-list-item:last-child{border-bottom:none}
+.team-list-item:hover{background:var(--bg2)}
+.team-list-item.active{background:var(--bg2);font-weight:500}
+.tl-badge{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0}
+.tl-name{font-size:12px}
+.tl-pts{font-size:11px;color:var(--text3);margin-left:auto}
+.ps-panel{display:flex;flex-direction:column;gap:12px}
+.ps-team-header{display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.ps-team-name{font-size:18px;font-weight:600}
+.ps-team-meta{font-size:12px;color:var(--text2)}
+.ps-totals{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ps-total-card{background:var(--bg2);border-radius:var(--radius-sm);padding:8px 10px;border:1px solid var(--border);text-align:center}
+.ps-total-val{font-size:16px;font-weight:600}
+.ps-total-lbl{font-size:10px;color:var(--text3);margin-top:1px}
+.pos-section{background:var(--bg2);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden}
+.pos-header{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.pos-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.pos-share-total{font-size:11px;color:var(--text3);margin-left:auto}
+.pos-share-total.warn{color:var(--amber)}
+.pos-share-total.ok{color:var(--green)}
+.player-row{display:grid;align-items:center;padding:6px 12px;border-bottom:1px solid var(--border);gap:8px}
+.player-row:last-child{border-bottom:none}
+.player-row.qb-row{grid-template-columns:1fr 80px 80px 80px 80px}
+.player-row.rb-row{grid-template-columns:1fr 70px 70px 70px 70px 80px 80px 80px}
+.player-row.wr-row{grid-template-columns:1fr 70px 80px 80px 80px}
+.player-row.te-row{grid-template-columns:1fr 70px 80px 80px 80px}
+.player-row.header-row{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;background:var(--bg2)}
+.player-name{font-size:12px;font-weight:500}
+.player-depth{font-size:10px;color:var(--text3)}
+.share-input{width:100%;font-size:12px;padding:3px 6px;border-radius:4px;border:1px solid var(--border2);background:var(--bg);color:var(--text);text-align:right;font-family:var(--font)}
+.share-input:focus{outline:none;border-color:var(--blue)}
+.proj-val{font-size:12px;color:var(--text2);text-align:right}
+.proj-val.highlight{color:var(--text);font-weight:500}
+.fpts-val{font-size:12px;font-weight:600;text-align:right}
+.fpts-pos{color:var(--blue)}
+.share-pct{font-size:11px;color:var(--text3);text-align:right}
 </style>
 </head>
 <body>
@@ -94,7 +168,7 @@ td:first-child{text-align:left;padding-left:12px}
   <header>
     <div>
       <h1>NFL 2026 Fantasy Projections</h1>
-      <p>Team-level offense · half-PPR superflex · click any row to edit</p>
+      <p>Team offense · player shares · half-PPR superflex</p>
     </div>
     <div class="save-bar">
       <div class="save-dot" id="saveDot"></div>
@@ -103,54 +177,130 @@ td:first-child{text-align:left;padding-left:12px}
   </header>
 
   <div class="nav">
-    <button class="nav-tab active">Team projections</button>
-    <button class="nav-tab dim">Player shares <span class="badge">next</span></button>
-    <button class="nav-tab dim">Valuation gaps <span class="badge">soon</span></button>
+    <button class="nav-tab" id="tab1btn" onclick="showTab(1)">Team projections</button>
+    <button class="nav-tab" id="tab2btn" onclick="showTab(2)">Player shares</button>
+    <button class="nav-tab" id="tab3btn" onclick="showTab(3)">Player rankings</button>
   </div>
 
-  <div class="sum-row" id="sumRow"></div>
-
-  <div class="toolbar">
-    <input type="text" id="srch" placeholder="Search teams…" oninput="render()">
-    <select id="srt" onchange="render()">
-      <option value="name">Team name</option>
-      <option value="plays">Total plays ↓</option>
-      <option value="tds">Total TDs ↓</option>
-      <option value="pass_yds">Pass yards ↓</option>
-      <option value="rush_yds">Rush yards ↓</option>
-      <option value="pass_rate">Pass rate ↓</option>
-      <option value="ptd">Pass TDs ↓</option>
-      <option value="rtd">Rush TDs ↓</option>
-    </select>
-    <div class="conf-pills">
-      <button class="pill on" data-c="ALL" onclick="setConf(this)">All</button>
-      <button class="pill" data-c="AFC" onclick="setConf(this)">AFC</button>
-      <button class="pill" data-c="NFC" onclick="setConf(this)">NFC</button>
+  <!-- TAB 1 -->
+  <div class="tab-content" id="tab1">
+    <div class="sum-row" id="sumRow"></div>
+    <div class="toolbar">
+      <input type="text" id="srch" placeholder="Search teams…" oninput="renderTab1()">
+      <select id="srt" onchange="renderTab1()">
+        <option value="name">Team name</option>
+        <option value="plays">Total plays ↓</option>
+        <option value="tds">Total TDs ↓</option>
+        <option value="pass_yds">Pass yards ↓</option>
+        <option value="rush_yds">Rush yards ↓</option>
+        <option value="pass_rate">Pass rate ↓</option>
+        <option value="ptd">Pass TDs ↓</option>
+        <option value="rtd">Rush TDs ↓</option>
+      </select>
+      <div class="conf-pills">
+        <button class="pill on" data-c="ALL" onclick="setConf(this)">All</button>
+        <button class="pill" data-c="AFC" onclick="setConf(this)">AFC</button>
+        <button class="pill" data-c="NFC" onclick="setConf(this)">NFC</button>
+      </div>
+      <button class="btn" onclick="resetAll()" style="margin-left:auto">Reset all</button>
     </div>
-    <button class="btn" onclick="resetAll()" style="margin-left:auto">Reset all</button>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th onclick="setSort('name')">Team</th>
+          <th onclick="setSort('plays')">Plays</th>
+          <th onclick="setSort('pass_att')">Pass att</th>
+          <th onclick="setSort('rush_att')">Rush att</th>
+          <th onclick="setSort('pass_yds')">Pass yds</th>
+          <th onclick="setSort('rush_yds')">Rush yds</th>
+          <th onclick="setSort('ptd')">Pass TD</th>
+          <th onclick="setSort('rtd')">Rush TD</th>
+          <th onclick="setSort('tds')">Total TD</th>
+          <th onclick="setSort('pass_rate')">Pass%</th>
+        </tr></thead>
+        <tbody id="tbody1"></tbody>
+      </table>
+    </div>
+    <div class="src-note">Source: Pro Football Reference team offense 2023–2025. Defaults = 3-year average. Click any row to edit.</div>
   </div>
 
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr>
-        <th onclick="setSort('name')">Team</th>
-        <th onclick="setSort('plays')">Plays</th>
-        <th onclick="setSort('pass_att')">Pass att</th>
-        <th onclick="setSort('rush_att')">Rush att</th>
-        <th onclick="setSort('pass_yds')">Pass yds</th>
-        <th onclick="setSort('rush_yds')">Rush yds</th>
-        <th onclick="setSort('ptd')">Pass TD</th>
-        <th onclick="setSort('rtd')">Rush TD</th>
-        <th onclick="setSort('tds')">Total TD</th>
-        <th onclick="setSort('pass_rate')">Pass%</th>
-      </tr></thead>
-      <tbody id="tbody"></tbody>
-    </table>
+  <!-- TAB 2 -->
+  <div class="tab-content" id="tab2">
+    <div class="ps-layout">
+      <div>
+        <div class="toolbar" style="margin-bottom:8px">
+          <input type="text" id="srch2" placeholder="Filter teams…" oninput="renderTeamList()" style="width:100%">
+        </div>
+        <div class="team-list" id="teamList"></div>
+      </div>
+      <div class="ps-panel" id="psPanel">
+        <div style="color:var(--text3);font-size:13px;padding:20px 0">Select a team to view player shares →</div>
+      </div>
+    </div>
+    <div class="src-note">Shares are % of team totals. Stats derive top-down from team projections. Half-PPR superflex scoring.</div>
   </div>
-  <div class="src-note">Source: Pro Football Reference team offense 2023–2025 (17-game seasons). Defaults = 3-year average. Projections saved locally in your browser.</div>
+
+  <!-- TAB 3 -->
+  <div class="tab-content" id="tab3">
+    <!-- Scoring settings bar -->
+    <div class="scoring-bar">
+      <div>
+        <label>Pass TD</label>
+        <div class="seg-ctrl" id="passTDCtrl">
+          <button class="seg-btn on" data-val="4" onclick="setScoringOpt('passTD',this)">4 pts</button>
+          <button class="seg-btn" data-val="6" onclick="setScoringOpt('passTD',this)">6 pts</button>
+        </div>
+      </div>
+      <div>
+        <label>Reception</label>
+        <div class="seg-ctrl" id="pprCtrl">
+          <button class="seg-btn" data-val="0" onclick="setScoringOpt('ppr',this)">0 PPR</button>
+          <button class="seg-btn on" data-val="0.5" onclick="setScoringOpt('ppr',this)">½ PPR</button>
+          <button class="seg-btn" data-val="1" onclick="setScoringOpt('ppr',this)">Full PPR</button>
+        </div>
+      </div>
+      <div class="te-bonus-wrap">
+        <label>TE Premium</label>
+        <input class="te-bonus-input" type="number" id="teBonusInput" value="0" min="0" max="1" step="0.25" onchange="setScoringRaw('teBonus',this.value)">
+        <span style="font-size:11px;color:var(--text3)">pts/rec</span>
+      </div>
+    </div>
+
+    <!-- Filter toolbar -->
+    <div class="toolbar">
+      <input type="text" id="srch3" placeholder="Search players or teams…" oninput="renderRankings()" style="width:200px">
+      <div class="conf-pills" id="posPills">
+        <button class="pill on" data-pos="ALL" onclick="setPosFilter(this)">All</button>
+        <button class="pill" data-pos="QB" onclick="setPosFilter(this)">QB</button>
+        <button class="pill" data-pos="RB" onclick="setPosFilter(this)">RB</button>
+        <button class="pill" data-pos="WR" onclick="setPosFilter(this)">WR</button>
+        <button class="pill" data-pos="TE" onclick="setPosFilter(this)">TE</button>
+      </div>
+    </div>
+
+    <div class="rankings-tbl-wrap">
+      <table>
+        <thead><tr>
+          <th style="text-align:right;width:40px" onclick="setRankSort('rank')">Rank</th>
+          <th style="text-align:left;padding-left:12px" onclick="setRankSort('name')">Player</th>
+          <th onclick="setRankSort('pos')">Pos</th>
+          <th onclick="setRankSort('posRank')">Pos rank</th>
+          <th onclick="setRankSort('team')">Team</th>
+          <th onclick="setRankSort('fpts')">Fpts</th>
+          <th onclick="setRankSort('passYds')">Pass yds</th>
+          <th onclick="setRankSort('rushYds')">Rush yds</th>
+          <th onclick="setRankSort('recYds')">Rec yds</th>
+          <th onclick="setRankSort('tds')">TDs</th>
+        </tr></thead>
+        <tbody id="tbody3"></tbody>
+      </table>
+    </div>
+    <div class="src-note">Fantasy points calculated from your team projections and player shares. Adjust scoring settings above to match your league.</div>
+  </div>
 </div>
 
 <script>
+// ─── TEAM DATA ───────────────────────────────────────────────────────────────
 const TEAMS=[
 {abbr:'ARI',name:'Arizona Cardinals',conf:'NFC',div:'West',color:'#97233F',bg:'#F5E9EB',hist:[{y:2023,pass:555,rush:471,passYds:3144,rushYds:2365,passTD:18,rushTD:17},{y:2024,pass:543,rush:463,passYds:3639,rushYds:2451,passTD:21,rushTD:11},{y:2025,pass:649,rush:366,passYds:3955,rushYds:1583,passTD:29,rushTD:9}]},
 {abbr:'ATL',name:'Atlanta Falcons',conf:'NFC',div:'South',color:'#A71930',bg:'#F5E9EB',hist:[{y:2023,pass:530,rush:495,passYds:3524,rushYds:2159,passTD:17,rushTD:14},{y:2024,pass:559,rush:495,passYds:4068,rushYds:2219,passTD:21,rushTD:18},{y:2025,pass:545,rush:477,passYds:3523,rushYds:2138,passTD:19,rushTD:17}]},
@@ -186,106 +336,498 @@ const TEAMS=[
 {abbr:'WAS',name:'Washington Commanders',conf:'NFC',div:'East',color:'#5A1414',bg:'#F0EAEA',hist:[{y:2023,pass:407,rush:636,passYds:3725,rushYds:1592,passTD:31,rushTD:14},{y:2024,pass:525,rush:526,passYds:3665,rushYds:2619,passTD:29,rushTD:25},{y:2025,pass:469,rush:484,passYds:3129,rushYds:2290,passTD:19,rushTD:20}]},
 ];
 
-const KEY='nfl-proj-2026-v1';
-const proj={};
-let saveTimer=null;
+// ─── ROSTER DATA ───────────────────────────────────────────────────────────
+// Edit rosters.js and paste the ROSTERS block here to update
+const ROSTERS = {
 
-function defaultProj(t){
-  const avg=f=>Math.round(t.hist.reduce((s,h)=>s+h[f],0)/3);
-  const avgF=f=>parseFloat((t.hist.reduce((s,h)=>s+h[f],0)/3).toFixed(1));
-  return{rush:avg('rush'),pass:avg('pass'),rushYds:avg('rushYds'),passYds:avg('passYds'),rushTD:avgF('rushTD'),passTD:avgF('passTD'),mod:false};
+// ── AFC EAST ─────────────────────────────────────────────────────────────────
+
+BUF: {
+  QB: [{name:'Josh Allen',depth:1},{name:'Kyle Allen',depth:2},{name:'Shane Buechele',depth:3}],
+  RB: [{name:'James Cook',depth:1},{name:'Ray Davis',depth:2},{name:'Frank Gore Jr.',depth:3},{name:'Ty Johnson',depth:4}],
+  WR: [{name:'Khalil Shakir',depth:1},{name:'Keon Coleman',depth:2},{name:'D.J. Moore',depth:3},{name:'Mecole Hardman',depth:4},{name:'Josh Palmer',depth:5},{name:'Trent Sherfield',depth:6}],
+  TE: [{name:'Dalton Kincaid',depth:1},{name:'Dawson Knox',depth:2},{name:'Keleki Latu',depth:3}]
+},
+
+MIA: {
+  QB: [{name:'Quinn Ewers',depth:1},{name:'Malik Willis',depth:2},{name:'Cam Miller',depth:3}],
+  RB: [{name:'De\'Von Achane',depth:1},{name:'Ollie Gordon II',depth:2},{name:'Jaylen Wright',depth:3},{name:'Anthony Hankerson',depth:4}],
+  WR: [{name:'Tutu Atwell',depth:1},{name:'Caleb Douglas',depth:2},{name:'Terrace Marshall Jr.',depth:3},{name:'Jalen Tolbert',depth:4},{name:'Tahj Washington',depth:5},{name:'A.J. Henning',depth:6}],
+  TE: [{name:'Jalin Conyers',depth:1},{name:'Cole Turner',depth:2},{name:'Greg Dulcich',depth:3}]
+},
+
+NE: {
+  QB: [{name:'Drake Maye',depth:1},{name:'Tommy DeVito',depth:2},{name:'Behren Morton',depth:3}],
+  RB: [{name:'Rhamondre Stevenson',depth:1},{name:'TreVeyon Henderson',depth:2},{name:'Myles Montgomery',depth:3},{name:'Lan Larison',depth:4}],
+  WR: [{name:'Kayshon Boutte',depth:1},{name:'Romeo Doubs',depth:2},{name:'DeMario Douglas',depth:3},{name:'Mack Hollins',depth:4},{name:'Kyle Williams',depth:5},{name:'Efton Chism',depth:6}],
+  TE: [{name:'Hunter Henry',depth:1},{name:'CJ Dippre',depth:2},{name:'Eli Raridon',depth:3}]
+},
+
+NYJ: {
+  QB: [{name:'Geno Smith',depth:1},{name:'Cade Klubnik',depth:2},{name:'Bailey Zappe',depth:3}],
+  RB: [{name:'Breece Hall',depth:1},{name:'Isaiah Davis',depth:2},{name:'Braelon Allen',depth:3},{name:'Kene Nwangwu',depth:4}],
+  WR: [{name:'Garrett Wilson',depth:1},{name:'Adonai Mitchell',depth:2},{name:'Malik McClain',depth:3},{name:'Arian Smith',depth:4},{name:'Isaiah Williams',depth:5},{name:'Omar Cooper Jr.',depth:6}],
+  TE: [{name:'Mason Taylor',depth:1},{name:'Jelani Woods',depth:2},{name:'Jeremy Ruckert',depth:3}]
+},
+
+// ── AFC NORTH ────────────────────────────────────────────────────────────────
+
+BAL: {
+  QB: [{name:'Lamar Jackson',depth:1},{name:'Tyler Huntley',depth:2},{name:'Joe Fagnano',depth:3}],
+  RB: [{name:'Derrick Henry',depth:1},{name:'Rasheen Ali',depth:2},{name:'Justice Hill',depth:3},{name:'Dontae McMillan',depth:4}],
+  WR: [{name:'Zay Flowers',depth:1},{name:'Rashod Bateman',depth:2},{name:'Devontez Walker',depth:3},{name:'LaJohntay Wester',depth:4},{name:'Cornelius Johnson',depth:5},{name:'Elijah Sarratt',depth:6}],
+  TE: [{name:'Mark Andrews',depth:1},{name:'Durham Smythe',depth:2},{name:'Josh Cuevas',depth:3}]
+},
+
+CIN: {
+  QB: [{name:'Joe Burrow',depth:1},{name:'Joe Flacco',depth:2},{name:'Sean Clifford',depth:3}],
+  RB: [{name:'Chase Brown',depth:1},{name:'Jamal Haynes',depth:2},{name:'Samaje Perine',depth:3},{name:'Gary Brightwell',depth:4}],
+  WR: [{name:'Ja\'Marr Chase',depth:1},{name:'Tee Higgins',depth:2},{name:'Charlie Jones',depth:3},{name:'Andrei Iosivas',depth:4},{name:'Kendric Pryor',depth:5},{name:'Noah Thomas',depth:6}],
+  TE: [{name:'Mike Gesicki',depth:1},{name:'Erick All',depth:2},{name:'Tanner Hudson',depth:3}]
+},
+
+CLE: {
+  QB: [{name:'Shedeur Sanders',depth:1},{name:'Dillon Gabriel',depth:2},{name:'Taylen Green',depth:3}],
+  RB: [{name:'Quinshon Judkins',depth:1},{name:'Dylan Sampson',depth:2},{name:'Raheim Sanders',depth:3},{name:'TJ Harden',depth:4}],
+  WR: [{name:'Jerry Jeudy',depth:1},{name:'Cedric Tillman',depth:2},{name:'Malachi Corley',depth:3},{name:'Jamari Thrash',depth:4},{name:'Tylan Wallace',depth:5},{name:'Kole Wilson',depth:6}],
+  TE: [{name:'Harold Fannin Jr.',depth:1},{name:'Jack Stoll',depth:2},{name:'Caden Prieskorn',depth:3}]
+},
+
+PIT: {
+  QB: [{name:'Aaron Rodgers',depth:1},{name:'Will Howard',depth:2},{name:'Drew Allar',depth:3}],
+  RB: [{name:'Rico Dowdle',depth:1},{name:'Jaylen Warren',depth:2},{name:'Kaleb Johnson',depth:3},{name:'Lew Nichols III',depth:4}],
+  WR: [{name:'George Pickens',depth:1},{name:'DK Metcalf',depth:2},{name:'Michael Pittman Jr.',depth:3},{name:'Ben Skowronek',depth:4},{name:'Germie Bernard',depth:5},{name:'Brandon Smith',depth:6}],
+  TE: [{name:'Pat Freiermuth',depth:1},{name:'Darnell Washington',depth:2},{name:'Brenden Bates',depth:3}]
+},
+
+// ── AFC SOUTH ────────────────────────────────────────────────────────────────
+
+HOU: {
+  QB: [{name:'C.J. Stroud',depth:1},{name:'Davis Mills',depth:2},{name:'Graham Mertz',depth:3}],
+  RB: [{name:'Woody Marks',depth:1},{name:'David Montgomery',depth:2},{name:'Jawhar Jordan',depth:3},{name:'Evan Hull',depth:4}],
+  WR: [{name:'Nico Collins',depth:1},{name:'Tank Dell',depth:2},{name:'Jayden Higgins',depth:3},{name:'Xavier Hutchinson',depth:4},{name:'Justin Watson',depth:5},{name:'Lewis Bond',depth:6}],
+  TE: [{name:'Brevin Jordan',depth:1},{name:'Dalton Schultz',depth:2},{name:'Foster Moreau',depth:3}]
+},
+
+IND: {
+  QB: [{name:'Anthony Richardson',depth:1},{name:'Daniel Jones',depth:2},{name:'Riley Leonard',depth:3}],
+  RB: [{name:'Jonathan Taylor',depth:1},{name:'DJ Giddens',depth:2},{name:'Seth McGowan',depth:3},{name:'Ulysses Bentley IV',depth:4}],
+  WR: [{name:'Michael Pittman Jr.',depth:1},{name:'Alec Pierce',depth:2},{name:'Anthony Gould',depth:3},{name:'Josh Downs',depth:4},{name:'Laquon Treadwell',depth:5},{name:'Nick Westbrook-Ikhine',depth:6}],
+  TE: [{name:'Tyler Warren',depth:1},{name:'Mo Alie-Cox',depth:2},{name:'Will Mallory',depth:3}]
+},
+
+JAX: {
+  QB: [{name:'Trevor Lawrence',depth:1},{name:'Nick Mullens',depth:2},{name:'Carter Bradley',depth:3}],
+  RB: [{name:'Travis Etienne Jr.',depth:1},{name:'LeQuint Allen',depth:2},{name:'Bhayshul Tuten',depth:3},{name:'DeeJay Dallas',depth:4}],
+  WR: [{name:'Brian Thomas Jr.',depth:1},{name:'Jakobi Meyers',depth:2},{name:'Parker Washington',depth:3},{name:'Tim Jones',depth:4},{name:'CJ Williams',depth:5},{name:'Chandler Brayboy',depth:6}],
+  TE: [{name:'Brenton Strange',depth:1},{name:'Patrick Herbert',depth:2},{name:'Ethan Conner',depth:3}]
+},
+
+TEN: {
+  QB: [{name:'Cam Ward',depth:1},{name:'Will Levis',depth:2},{name:'Hendon Hooker',depth:3}],
+  RB: [{name:'Tony Pollard',depth:1},{name:'Tyjae Spears',depth:2},{name:'Nicholas Singleton',depth:3},{name:'Julius Chestnut',depth:4}],
+  WR: [{name:'Calvin Ridley',depth:1},{name:'Wan\'Dale Robinson',depth:2},{name:'Xavier Restrepo',depth:3},{name:'K.J. Osborn',depth:4},{name:'Elic Ayomanor',depth:5},{name:'Lance McCutcheon',depth:6}],
+  TE: [{name:'Chig Okonkwo',depth:1},{name:'Gunnar Helm',depth:2},{name:'Joel Wilson',depth:3}]
+},
+
+// ── AFC WEST ─────────────────────────────────────────────────────────────────
+
+DEN: {
+  QB: [{name:'Bo Nix',depth:1},{name:'Jarrett Stidham',depth:2},{name:'Sam Ehlinger',depth:3}],
+  RB: [{name:'J.K. Dobbins',depth:1},{name:'Jaleel McLaughlin',depth:2},{name:'RJ Harvey',depth:3},{name:'Cody Schrader',depth:4}],
+  WR: [{name:'Courtland Sutton',depth:1},{name:'Jaylen Waddle',depth:2},{name:'Troy Franklin',depth:3},{name:'Marvin Mims',depth:4},{name:'Lil\'Jordan Humphrey',depth:5},{name:'Michael Woods II',depth:6}],
+  TE: [{name:'Evan Engram',depth:1},{name:'Adam Trautman',depth:2},{name:'Dallen Bentley',depth:3}]
+},
+
+KC: {
+  QB: [{name:'Patrick Mahomes',depth:1},{name:'Justin Fields',depth:2},{name:'Garrett Nussmeier',depth:3}],
+  RB: [{name:'Kenneth Walker III',depth:1},{name:'Emmett Johnson',depth:2},{name:'Brashard Smith',depth:3},{name:'EJ Smith',depth:4}],
+  WR: [{name:'Rashee Rice',depth:1},{name:'Xavier Worthy',depth:2},{name:'Jalen Royals',depth:3},{name:'Tyquan Thornton',depth:4},{name:'Nikko Remigio',depth:5},{name:'Jimmy Holiday',depth:6}],
+  TE: [{name:'Travis Kelce',depth:1},{name:'Jake Briningstool',depth:2},{name:'Tre Watson',depth:3}]
+},
+
+LV: {
+  QB: [{name:'Kirk Cousins',depth:1},{name:'Aidan O\'Connell',depth:2},{name:'Fernando Mendoza',depth:3}],
+  RB: [{name:'Ashton Jeanty',depth:1},{name:'Dylan Laube',depth:2},{name:'Roman Hemby',depth:3},{name:'Mike Washington Jr.',depth:4}],
+  WR: [{name:'Jack Bech',depth:1},{name:'Dont\'e Thornton',depth:2},{name:'Tre Tucker',depth:3},{name:'Jalen Nailor',depth:4},{name:'Shedrick Jackson',depth:5},{name:'Corey Rucker',depth:6}],
+  TE: [{name:'Brock Bowers',depth:1},{name:'Michael Mayer',depth:2},{name:'Albert Okwuegbunam',depth:3}]
+},
+
+LAC: {
+  QB: [{name:'Justin Herbert',depth:1},{name:'Trey Lance',depth:2},{name:'DJ Uiagalelei',depth:3}],
+  RB: [{name:'Omarion Hampton',depth:1},{name:'Keaton Mitchell',depth:2},{name:'Kimani Vidal',depth:3},{name:'Jaret Patterson',depth:4}],
+  WR: [{name:'Ladd McConkey',depth:1},{name:'Quentin Johnston',depth:2},{name:'Tre Harris',depth:3},{name:'KeAndre Lambert-Smith',depth:4},{name:'Derius Davis',depth:5},{name:'JaQuae Jackson',depth:6}],
+  TE: [{name:'Oronde Gadsden II',depth:1},{name:'David Njoku',depth:2},{name:'Charlie Kolar',depth:3}]
+},
+
+// ── NFC EAST ─────────────────────────────────────────────────────────────────
+
+DAL: {
+  QB: [{name:'Dak Prescott',depth:1},{name:'Sam Howell',depth:2},{name:'Joe Milton',depth:3}],
+  RB: [{name:'Javonte Williams',depth:1},{name:'Israel Abanikanda',depth:2},{name:'Phil Mafah',depth:3},{name:'Dominic Richardson',depth:4}],
+  WR: [{name:'CeeDee Lamb',depth:1},{name:'George Pickens',depth:2},{name:'Parris Campbell',depth:3},{name:'Ryan Flournoy',depth:4},{name:'Marquez Valdes-Scantling',depth:5},{name:'Jonathan Mingo',depth:6}],
+  TE: [{name:'Jake Ferguson',depth:1},{name:'Luke Schoonmaker',depth:2},{name:'DJ Rogers',depth:3}]
+},
+
+NYG: {
+  QB: [{name:'Jaxson Dart',depth:1},{name:'Jameis Winston',depth:2},{name:'Brandon Allen',depth:3}],
+  RB: [{name:'Cam Skattebo',depth:1},{name:'Devin Singletary',depth:2},{name:'Tyrone Tracy Jr.',depth:3},{name:'Damon Bankston',depth:4}],
+  WR: [{name:'Malik Nabers',depth:1},{name:'Darnell Mooney',depth:2},{name:'Jalin Hyatt',depth:3},{name:'Darius Slayton',depth:4},{name:'Isaiah Hodgins',depth:5},{name:'Malachi Fields',depth:6}],
+  TE: [{name:'Thomas Fidone',depth:1},{name:'Isaiah Likely',depth:2},{name:'Tanner Conner',depth:3}]
+},
+
+PHI: {
+  QB: [{name:'Jalen Hurts',depth:1},{name:'Andy Dalton',depth:2},{name:'Tanner McKee',depth:3}],
+  RB: [{name:'Saquon Barkley',depth:1},{name:'Will Shipley',depth:2},{name:'Tank Bigsby',depth:3},{name:'Dameon Pierce',depth:4}],
+  WR: [{name:'A.J. Brown',depth:1},{name:'DeVonta Smith',depth:2},{name:'Dontayvion Wicks',depth:3},{name:'Quez Watkins',depth:4},{name:'Marquise Brown',depth:5},{name:'Danny Gray',depth:6}],
+  TE: [{name:'Dallas Goedert',depth:1},{name:'Grant Calcaterra',depth:2},{name:'EJ Jenkins',depth:3}]
+},
+
+WAS: {
+  QB: [{name:'Jayden Daniels',depth:1},{name:'Sam Hartman',depth:2},{name:'Athan Kaliakmanis',depth:3}],
+  RB: [{name:'Rachaad White',depth:1},{name:'Kaytron Allen',depth:2},{name:'Jerome Ford',depth:3},{name:'Robert Henry Jr.',depth:4}],
+  WR: [{name:'Terry McLaurin',depth:1},{name:'Dyami Brown',depth:2},{name:'Luke McCaffrey',depth:3},{name:'Jahan Dotson',depth:4},{name:'Treylon Burks',depth:5},{name:'Antonio Williams',depth:6}],
+  TE: [{name:'Chig Okonkwo',depth:1},{name:'Ben Sinnott',depth:2},{name:'Lawrence Cager',depth:3}]
+},
+
+// ── NFC NORTH ────────────────────────────────────────────────────────────────
+
+CHI: {
+  QB: [{name:'Caleb Williams',depth:1},{name:'Tyson Bagent',depth:2},{name:'Miller Moss',depth:3}],
+  RB: [{name:'D\'Andre Swift',depth:1},{name:'Roschon Johnson',depth:2},{name:'Kyle Monangai',depth:3},{name:'Coleman Bennett',depth:4}],
+  WR: [{name:'Rome Odunze',depth:1},{name:'Luther Burden III',depth:2},{name:'Kalif Raymond',depth:3},{name:'Jahdae Walker',depth:4},{name:'JP Richardson',depth:5},{name:'Scotty Miller',depth:6}],
+  TE: [{name:'Cole Kmet',depth:1},{name:'Colston Loveland',depth:2},{name:'Qadir Ismail',depth:3}]
+},
+
+DET: {
+  QB: [{name:'Jared Goff',depth:1},{name:'Luke Altmyer',depth:2},{name:'Teddy Bridgewater',depth:3}],
+  RB: [{name:'Jahmyr Gibbs',depth:1},{name:'Isiah Pacheco',depth:2},{name:'Sione Vaki',depth:3},{name:'Kye Robichaux',depth:4}],
+  WR: [{name:'Amon-Ra St. Brown',depth:1},{name:'Jameson Williams',depth:2},{name:'Kendrick Law',depth:3},{name:'Greg Dortch',depth:4},{name:'Dominic Lovett',depth:5},{name:'Jackson Meeks',depth:6}],
+  TE: [{name:'Sam LaPorta',depth:1},{name:'Brock Wright',depth:2},{name:'Tyler Conklin',depth:3}]
+},
+
+GB: {
+  QB: [{name:'Jordan Love',depth:1},{name:'Kyron Drones',depth:2},{name:'Kyle McCord',depth:3}],
+  RB: [{name:'Josh Jacobs',depth:1},{name:'MarShawn Lloyd',depth:2},{name:'Damien Martinez',depth:3},{name:'Pierre Strong Jr.',depth:4}],
+  WR: [{name:'Jayden Reed',depth:1},{name:'Matthew Golden',depth:2},{name:'Christian Watson',depth:3},{name:'Will Sheppard',depth:4},{name:'Brenden Rice',depth:5},{name:'Savion Williams',depth:6}],
+  TE: [{name:'Tucker Kraft',depth:1},{name:'Luke Musgrave',depth:2},{name:'Josh Whyle',depth:3}]
+},
+
+MIN: {
+  QB: [{name:'J.J. McCarthy',depth:1},{name:'Kyler Murray',depth:2},{name:'Carson Wentz',depth:3}],
+  RB: [{name:'Aaron Jones',depth:1},{name:'Jordan Mason',depth:2},{name:'Demond Claiborne',depth:3},{name:'Kejon Owens',depth:4}],
+  WR: [{name:'Justin Jefferson',depth:1},{name:'Jordan Addison',depth:2},{name:'Tai Felton',depth:3},{name:'Jauan Jennings',depth:4},{name:'Myles Price',depth:5},{name:'Dontae Fleming',depth:6}],
+  TE: [{name:'T.J. Hockenson',depth:1},{name:'Gavin Bartholomew',depth:2},{name:'Ben Yurosek',depth:3}]
+},
+
+// ── NFC SOUTH ────────────────────────────────────────────────────────────────
+
+ATL: {
+  QB: [{name:'Tua Tagovailoa',depth:1},{name:'Michael Penix Jr.',depth:2},{name:'Jack Strand',depth:3}],
+  RB: [{name:'Bijan Robinson',depth:1},{name:'Brian Robinson Jr.',depth:2},{name:'Tyler Goodson',depth:3},{name:'Cash Jones',depth:4}],
+  WR: [{name:'Drake London',depth:1},{name:'Jahan Dotson',depth:2},{name:'Zachariah Branch',depth:3},{name:'Olamide Zaccheaus',depth:4},{name:'Casey Washington',depth:5},{name:'Casey Washington',depth:6}],
+  TE: [{name:'Kyle Pitts',depth:1},{name:'Austin Hooper',depth:2},{name:'Charlie Woerner',depth:3}]
+},
+
+CAR: {
+  QB: [{name:'Bryce Young',depth:1},{name:'Kenny Pickett',depth:2},{name:'Will Grier',depth:3}],
+  RB: [{name:'Jonathon Brooks',depth:1},{name:'Chuba Hubbard',depth:2},{name:'AJ Dillon',depth:3},{name:'Trevor Etienne',depth:4}],
+  WR: [{name:'Tetairoa McMillan',depth:1},{name:'Xavier Legette',depth:2},{name:'Jalen Coker',depth:3},{name:'John Metchie III',depth:4},{name:'Ainias Smith',depth:5},{name:'Jimmy Horn Jr.',depth:6}],
+  TE: [{name:'Ja\'Tavion Sanders',depth:1},{name:'Tommy Tremble',depth:2},{name:'James Mitchell',depth:3}]
+},
+
+NO: {
+  QB: [{name:'Tyler Shough',depth:1},{name:'Spencer Rattler',depth:2},{name:'Zach Wilson',depth:3}],
+  RB: [{name:'Alvin Kamara',depth:1},{name:'Travis Etienne',depth:2},{name:'Kendre Miller',depth:3},{name:'Devin Neal',depth:4}],
+  WR: [{name:'Chris Olave',depth:1},{name:'Ja\'Lynn Polk',depth:2},{name:'Bub Means',depth:3},{name:'Barion Brown',depth:4},{name:'Trey Palmer',depth:5},{name:'Devaughn Vele',depth:6}],
+  TE: [{name:'Noah Fant',depth:1},{name:'Juwan Johnson',depth:2},{name:'Moliki Matavao',depth:3}]
+},
+
+TB: {
+  QB: [{name:'Baker Mayfield',depth:1},{name:'Jake Browning',depth:2},{name:'Jalon Daniels',depth:3}],
+  RB: [{name:'Bucky Irving',depth:1},{name:'Kenneth Gainwell',depth:2},{name:'Sean Tucker',depth:3},{name:'Josh Williams',depth:4}],
+  WR: [{name:'Mike Evans',depth:1},{name:'Chris Godwin',depth:2},{name:'Emeka Egbuka',depth:3},{name:'Jalen McMillan',depth:4},{name:'Tez Johnson',depth:5},{name:'Dennis Houston',depth:6}],
+  TE: [{name:'Cade Otton',depth:1},{name:'Ko Kieft',depth:2},{name:'Payne Durham',depth:3}]
+},
+
+// ── NFC WEST ─────────────────────────────────────────────────────────────────
+
+ARI: {
+  QB: [{name:'Kyler Murray',depth:1},{name:'Gardner Minshew',depth:2},{name:'Haynes King',depth:3}],
+  RB: [{name:'James Conner',depth:1},{name:'Jeremiyah Love',depth:2},{name:'Corey Kiner',depth:3},{name:'Zonovan Knight',depth:4}],
+  WR: [{name:'Marvin Harrison Jr.',depth:1},{name:'Michael Wilson',depth:2},{name:'Kendrick Bourne',depth:3},{name:'Simi Fehoko',depth:4},{name:'Ihmir Smith-Marsette',depth:5},{name:'Bryson Green',depth:6}],
+  TE: [{name:'Trey McBride',depth:1},{name:'Elijah Higgins',depth:2},{name:'Teagan Quitoriano',depth:3}]
+},
+
+LAR: {
+  QB: [{name:'Matthew Stafford',depth:1},{name:'Stetson Bennett',depth:2},{name:'Matthew Caldwell',depth:3}],
+  RB: [{name:'Kyren Williams',depth:1},{name:'Blake Corum',depth:2},{name:'Ronnie Rivers',depth:3},{name:'Jarquez Hunter',depth:4}],
+  WR: [{name:'Puka Nacua',depth:1},{name:'Cooper Kupp',depth:2},{name:'Davante Adams',depth:3},{name:'Mario Williams',depth:4},{name:'Tyler Scott',depth:5},{name:'Brennan Presley',depth:6}],
+  TE: [{name:'Tyler Higbee',depth:1},{name:'Colby Parkinson',depth:2},{name:'Davis Allen',depth:3}]
+},
+
+SF: {
+  QB: [{name:'Brock Purdy',depth:1},{name:'Mac Jones',depth:2},{name:'Kurtis Rourke',depth:3}],
+  RB: [{name:'Christian McCaffrey',depth:1},{name:'Isaac Guerendo',depth:2},{name:'Jordan James',depth:3},{name:'Patrick Taylor',depth:4}],
+  WR: [{name:'Ricky Pearsall',depth:1},{name:'Deebo Samuel',depth:2},{name:'Christian Kirk',depth:3},{name:'Demarcus Robinson',depth:4},{name:'Malik Turner',depth:5},{name:'Jordan Watkins',depth:6}],
+  TE: [{name:'George Kittle',depth:1},{name:'Luke Farrell',depth:2},{name:'Hayden Rucci',depth:3}]
+},
+
+SEA: {
+  QB: [{name:'Sam Darnold',depth:1},{name:'Jalen Milroe',depth:2},{name:'Drew Lock',depth:3}],
+  RB: [{name:'Zach Charbonnet',depth:1},{name:'Jadarian Price',depth:2},{name:'George Holani',depth:3},{name:'Kenny McIntosh',depth:4}],
+  WR: [{name:'Jaxon Smith-Njigba',depth:1},{name:'Cooper Kupp',depth:2},{name:'Rashid Shaheed',depth:3},{name:'Jake Bobo',depth:4},{name:'Cody White',depth:5},{name:'Velus Jones Jr.',depth:6}],
+  TE: [{name:'AJ Barner',depth:1},{name:'Elijah Arroyo',depth:2},{name:'AJ Barner',depth:3}]
 }
 
-function setSave(s,msg){
-  document.getElementById('saveDot').className='save-dot'+(s==='saved'?' saved':s==='saving'?' saving':'');
-  document.getElementById('saveMsg').textContent=msg;
+};
+
+
+
+// ─── DEFAULT SHARES ──────────────────────────────────────────────────────────
+const DEFAULT_SHARES = {
+  QB: [{rushShare:0,passShare:100},{rushShare:0,passShare:0},{rushShare:0,passShare:0}],
+  RB: [{rushShare:57,recShare:8},{rushShare:25,recShare:4},{rushShare:12,recShare:2},{rushShare:6,recShare:1}],
+  WR: [{recShare:26},{recShare:17},{recShare:11},{recShare:6},{recShare:3},{recShare:2}],
+  TE: [{recShare:12},{recShare:5},{recShare:1}]
+};
+
+// ─── SCORING ─────────────────────────────────────────────────────────────────
+// Scoring settings (defaults: 4pt pass TD, 0.5 PPR, 0 TE bonus)
+const scoring = { passTD: 4, ppr: 0.5, teBonus: 0 };
+
+function setScoringOpt(key, btn) {
+  const ctrl = btn.parentElement;
+  ctrl.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  scoring[key] = parseFloat(btn.dataset.val);
+  renderRankings();
+  // Also re-render player shares panel if open
+  if(selectedTeam) renderPlayerShares(selectedTeam);
+  renderTeamList();
 }
 
-function load(){
-  setSave('','Loading…');
-  try{
-    const raw=localStorage.getItem(KEY);
-    if(raw){
-      const saved=JSON.parse(raw);
-      TEAMS.forEach(t=>{proj[t.abbr]=saved[t.abbr]?{...defaultProj(t),...saved[t.abbr]}:defaultProj(t);});
-      const n=Object.values(proj).filter(p=>p.mod).length;
-      setSave('saved',n>0?`${n} team${n>1?'s':''} modified — saved`:'Loaded — no changes yet');
+function setScoringRaw(key, val) {
+  scoring[key] = parseFloat(val) || 0;
+  renderRankings();
+  if(selectedTeam) renderPlayerShares(selectedTeam);
+  renderTeamList();
+}
+
+function calcFpts(stats, isTE) {
+  isTE = isTE || false;
+  let pts = 0;
+  pts += (stats.passYds||0) * 0.04;
+  pts += (stats.passTD||0) * scoring.passTD;
+  pts += (stats.passInt||0) * -1;
+  pts += (stats.rushYds||0) * 0.1;
+  pts += (stats.rushTD||0) * 6;
+  const recPts = scoring.ppr + (isTE ? scoring.teBonus : 0);
+  pts += (stats.rec||0) * recPts;
+  pts += (stats.recYds||0) * 0.1;
+  pts += (stats.recTD||0) * 6;
+  return Math.round(pts * 10) / 10;
+}
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const KEY = 'nfl-proj-2026-v1';
+const teamProj = {};
+const shareProj = {}; // shareProj[abbr][pos][i] = {rushShare, recShare, passShare}
+let saveTimer = null;
+let selectedTeam = null;
+let conf = 'ALL', sortCol = 'name', sortDir = 1, expanded = null;
+let activeTab = 1;
+
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+function defaultTeamProj(t) {
+  const avg = f => Math.round(t.hist.reduce((s,h)=>s+h[f],0)/3);
+  const avgF = f => parseFloat((t.hist.reduce((s,h)=>s+h[f],0)/3).toFixed(1));
+  return {rush:avg('rush'),pass:avg('pass'),rushYds:avg('rushYds'),passYds:avg('passYds'),rushTD:avgF('rushTD'),passTD:avgF('passTD'),mod:false};
+}
+
+function defaultShares(abbr) {
+  const out = {};
+  const roster = ROSTERS[abbr];
+  ['QB','RB','WR','TE'].forEach(pos => {
+    out[pos] = roster[pos].map((p,i) => ({...DEFAULT_SHARES[pos][i] || {rushShare:0,recShare:0,passShare:0}}));
+  });
+  return out;
+}
+
+function setSave(s, msg) {
+  document.getElementById('saveDot').className = 'save-dot' + (s==='saved'?' saved':s==='saving'?' saving':'');
+  document.getElementById('saveMsg').textContent = msg;
+}
+
+function load() {
+  setSave('', 'Loading…');
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      TEAMS.forEach(t => {
+        teamProj[t.abbr] = saved.teams?.[t.abbr] ? {...defaultTeamProj(t), ...saved.teams[t.abbr]} : defaultTeamProj(t);
+        shareProj[t.abbr] = saved.shares?.[t.abbr] || defaultShares(t.abbr);
+      });
+      const n = Object.values(teamProj).filter(p=>p.mod).length;
+      setSave('saved', n>0 ? `${n} team${n>1?'s':''} modified — saved` : 'Loaded');
     } else {
-      TEAMS.forEach(t=>{proj[t.abbr]=defaultProj(t);});
-      setSave('saved','PFR defaults loaded — edits save automatically');
+      TEAMS.forEach(t => { teamProj[t.abbr] = defaultTeamProj(t); shareProj[t.abbr] = defaultShares(t.abbr); });
+      setSave('saved', 'PFR defaults loaded — edits save automatically');
     }
-  } catch(e){
-    TEAMS.forEach(t=>{proj[t.abbr]=defaultProj(t);});
-    setSave('','Defaults loaded');
+  } catch(e) {
+    TEAMS.forEach(t => { teamProj[t.abbr] = defaultTeamProj(t); shareProj[t.abbr] = defaultShares(t.abbr); });
+    setSave('', 'Defaults loaded');
   }
-  render();
+  renderTab1(); renderTeamList();
 }
 
-function save(){
-  setSave('saving','Saving…');
-  const s={};
-  TEAMS.forEach(t=>{if(proj[t.abbr].mod)s[t.abbr]=proj[t.abbr];});
-  try{
-    localStorage.setItem(KEY,JSON.stringify(s));
-    const n=Object.values(proj).filter(p=>p.mod).length;
-    setSave('saved',`${n} team${n!==1?'s':''} modified — saved`);
-  } catch(e){setSave('','Save failed');}
+function save() {
+  setSave('saving', 'Saving…');
+  const teams = {}, shares = {};
+  TEAMS.forEach(t => { if(teamProj[t.abbr].mod) teams[t.abbr] = teamProj[t.abbr]; shares[t.abbr] = shareProj[t.abbr]; });
+  try {
+    localStorage.setItem(KEY, JSON.stringify({teams, shares}));
+    const n = Object.values(teamProj).filter(p=>p.mod).length;
+    setSave('saved', `${n} team${n!==1?'s':''} modified — saved`);
+  } catch(e) { setSave('', 'Save failed'); }
+}
+function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(save, 800); }
+
+// ─── DERIVED STATS ───────────────────────────────────────────────────────────
+function teamDerived(p) {
+  const plays = p.rush + p.pass;
+  return {plays, totalTD: parseFloat((p.rushTD+p.passTD).toFixed(1)),
+    passRate: plays>0 ? (p.pass/plays*100).toFixed(1) : '0.0',
+    rushYPA: p.rush>0 ? (p.rushYds/p.rush).toFixed(2) : '0.00',
+    passYPA: p.pass>0 ? (p.passYds/p.pass).toFixed(2) : '0.00'};
 }
 
-function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(save,800);}
+function calcPlayerStats(abbr) {
+  const tp = teamProj[abbr];
+  const sp = shareProj[abbr];
+  const roster = ROSTERS[abbr];
+  const result = {QB:[],RB:[],WR:[],TE:[]};
 
-function derived(p){
-  const plays=p.rush+p.pass;
-  return{plays,totalTD:parseFloat((p.rushTD+p.passTD).toFixed(1)),passRate:plays>0?(p.pass/plays*100).toFixed(1):'0.0',rushYPA:p.rush>0?(p.rushYds/p.rush).toFixed(2):'0.00',passYPA:p.pass>0?(p.passYds/p.pass).toFixed(2):'0.00'};
+  // QB
+  roster.QB.forEach((pl,i) => {
+    const sh = sp.QB[i] || {passShare:0,rushShare:0};
+    const passAtt = Math.round(tp.pass * (sh.passShare||0) / 100);
+    const passYds = Math.round(tp.passYds * (sh.passShare||0) / 100);
+    const passTD = parseFloat((tp.passTD * (sh.passShare||0) / 100).toFixed(1));
+    const rushAtt = Math.round(tp.rush * (sh.rushShare||0) / 100);
+    const rushYds = Math.round(tp.rushYds * (sh.rushShare||0) / 100);
+    const rushTD = parseFloat((tp.rushTD * (sh.rushShare||0) / 100).toFixed(1));
+    const fpts = calcFpts({passYds,passTD,rushYds,rushTD});
+    result.QB.push({...pl, passAtt, passYds, passTD, rushAtt, rushYds, rushTD, fpts, sh});
+  });
+
+  // RB
+  roster.RB.forEach((pl,i) => {
+    const sh = sp.RB[i] || {rushShare:0,recShare:0};
+    const rushAtt = Math.round(tp.rush * (sh.rushShare||0) / 100);
+    const rushYds = Math.round(tp.rushYds * (sh.rushShare||0) / 100);
+    const rushTD = parseFloat((tp.rushTD * (sh.rushShare||0) / 100).toFixed(1));
+    const totalTgts = tp.pass * 0.21; // ~21% of passes go to RBs league avg
+    const rec = Math.round(totalTgts * (sh.recShare||0) / 100 * 0.78);
+    const recYds = Math.round(rec * 7.5);
+    const recTD = parseFloat((tp.passTD * (sh.recShare||0) / 100 * 0.15).toFixed(1));
+    const fpts = calcFpts({rushYds,rushTD,rec,recYds,recTD});
+    result.RB.push({...pl, rushAtt, rushYds, rushTD, rec, recYds, recTD, fpts, sh});
+  });
+
+  // WR
+  roster.WR.forEach((pl,i) => {
+    const sh = sp.WR[i] || {recShare:0};
+    const tgts = Math.round(tp.pass * (sh.recShare||0) / 100);
+    const rec = Math.round(tgts * 0.68);
+    const recYds = Math.round(rec * 13.5);
+    const recTD = parseFloat((tp.passTD * (sh.recShare||0) / 100 * 0.72).toFixed(1));
+    const fpts = calcFpts({rec,recYds,recTD}, false);
+    result.WR.push({...pl, tgts, rec, recYds, recTD, fpts, sh});
+  });
+
+  // TE
+  roster.TE.forEach((pl,i) => {
+    const sh = sp.TE[i] || {recShare:0};
+    const tgts = Math.round(tp.pass * (sh.recShare||0) / 100);
+    const rec = Math.round(tgts * 0.72);
+    const recYds = Math.round(rec * 11.2);
+    const recTD = parseFloat((tp.passTD * (sh.recShare||0) / 100 * 0.55).toFixed(1));
+    const fpts = calcFpts({rec,recYds,recTD}, true);
+    result.TE.push({...pl, tgts, rec, recYds, recTD, fpts, sh});
+  });
+
+  return result;
 }
 
-let conf='ALL',sortCol='name',sortDir=1,expanded=null;
+function teamTotalFpts(abbr) {
+  const stats = calcPlayerStats(abbr);
+  let total = 0;
+  ['QB','RB','WR','TE'].forEach(pos => stats[pos].forEach(p => total += p.fpts));
+  return Math.round(total);
+}
 
-function setConf(btn){document.querySelectorAll('.pill').forEach(b=>b.classList.remove('on'));btn.classList.add('on');conf=btn.dataset.c;render();}
-function setSort(col){sortDir=sortCol===col?sortDir*-1:-1;sortCol=col;render();}
-function sval(t,col){const p=proj[t.abbr],d=derived(p);return{name:t.name,plays:d.plays,pass_att:p.pass,rush_att:p.rush,pass_yds:p.passYds,rush_yds:p.rushYds,ptd:p.passTD,rtd:p.rushTD,tds:d.totalTD,pass_rate:parseFloat(d.passRate)}[col]??0;}
+// ─── TAB NAVIGATION ──────────────────────────────────────────────────────────
+function showTab(n) {
+  activeTab = n;
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab'+n).classList.add('active');
+  document.getElementById('tab'+n+'btn').classList.add('active');
+  if(n===2) { renderTeamList(); if(selectedTeam) renderPlayerShares(selectedTeam); }
+  if(n===3) { renderRankings(); }
+}
 
-function render(){
-  const q=document.getElementById('srch').value.toLowerCase();
-  let list=TEAMS.filter(t=>(t.name.toLowerCase().includes(q)||t.abbr.toLowerCase().includes(q))&&(conf==='ALL'||t.conf===conf));
+// ─── TAB 1 ───────────────────────────────────────────────────────────────────
+function setConf(btn) { document.querySelectorAll('.pill').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); conf=btn.dataset.c; renderTab1(); }
+function setSort(col) { sortDir = sortCol===col ? sortDir*-1 : -1; sortCol=col; renderTab1(); }
+function sval(t,col) {
+  const p=teamProj[t.abbr],d=teamDerived(p);
+  return{name:t.name,plays:d.plays,pass_att:p.pass,rush_att:p.rush,pass_yds:p.passYds,rush_yds:p.rushYds,ptd:p.passTD,rtd:p.rushTD,tds:d.totalTD,pass_rate:parseFloat(d.passRate)}[col]??0;
+}
+
+function renderTab1() {
+  const q = document.getElementById('srch').value.toLowerCase();
+  let list = TEAMS.filter(t=>(t.name.toLowerCase().includes(q)||t.abbr.toLowerCase().includes(q))&&(conf==='ALL'||t.conf===conf));
   list.sort((a,b)=>{const av=sval(a,sortCol),bv=sval(b,sortCol);return typeof av==='string'?av.localeCompare(bv)*sortDir:(bv-av)*-sortDir;});
-  const tb=document.getElementById('tbody');tb.innerHTML='';
-  list.forEach(t=>{
-    const p=proj[t.abbr],d=derived(p),isExp=expanded===t.abbr;
-    const tr=document.createElement('tr');if(isExp)tr.className='exp';
-    tr.onclick=()=>{expanded=isExp?null:t.abbr;render();};
+  const tb = document.getElementById('tbody1'); tb.innerHTML='';
+  list.forEach(t => {
+    const p=teamProj[t.abbr],d=teamDerived(p),isExp=expanded===t.abbr;
+    const tr=document.createElement('tr'); if(isExp)tr.className='exp';
+    tr.onclick=()=>{expanded=isExp?null:t.abbr;renderTab1();};
     const c=p.mod?'changed':'';
     tr.innerHTML=`<td><div class="team-cell"><div class="abbr-badge" style="background:${t.bg};color:${t.color}">${t.abbr}</div><div><div class="tname">${t.name}${p.mod?'<span class="mod-dot"></span>':''}</div><div class="tmeta">${t.conf} · ${t.div}</div></div></div></td><td class="${c}">${d.plays}</td><td class="${c}">${p.pass}</td><td class="${c}">${p.rush}</td><td class="${c}">${p.passYds.toLocaleString()}</td><td class="${c}">${p.rushYds.toLocaleString()}</td><td class="${c}">${p.passTD}</td><td class="${c}">${p.rushTD}</td><td class="${c}">${d.totalTD}</td><td class="${c}">${d.passRate}%</td>`;
     tb.appendChild(tr);
-    if(isExp){const dr=document.createElement('tr');dr.className='detail-row';const td=document.createElement('td');td.colSpan=10;td.innerHTML=detail(t,p,d);dr.appendChild(td);tb.appendChild(dr);}
+    if(isExp){const dr=document.createElement('tr');dr.className='detail-row';const td=document.createElement('td');td.colSpan=10;td.innerHTML=buildDetail(t,p,d);dr.appendChild(td);tb.appendChild(dr);}
   });
-  summary();
+  renderSummary();
 }
 
-function detail(t,p,d){
+function buildDetail(t,p,d){
   const rows=t.hist.map(h=>`<tr><td>${h.y}</td><td>${h.rush+h.pass}</td><td>${h.pass}</td><td>${h.rush}</td><td>${h.passYds.toLocaleString()}</td><td>${h.rushYds.toLocaleString()}</td><td>${h.passTD}</td><td>${h.rushTD}</td></tr>`).join('');
-  return`<div class="detail-inner"><div class="detail-grid"><div><h4>History (PFR)</h4><table class="htable"><thead><tr><th>Yr</th><th>Plays</th><th>Pass</th><th>Rush</th><th>PaYds</th><th>RuYds</th><th>PTD</th><th>RTD</th></tr></thead><tbody>${rows}</tbody></table></div><div><h4>2026 Projection</h4><div class="fields"><div class="fld"><label>Pass att</label><input type="number" value="${p.pass}" onchange="upd('${t.abbr}','pass',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush att</label><input type="number" value="${p.rush}" onchange="upd('${t.abbr}','rush',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Pass yards</label><input type="number" value="${p.passYds}" onchange="upd('${t.abbr}','passYds',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush yards</label><input type="number" value="${p.rushYds}" onchange="upd('${t.abbr}','rushYds',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Pass TDs</label><input type="number" step="0.5" value="${p.passTD}" onchange="upd('${t.abbr}','passTD',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush TDs</label><input type="number" step="0.5" value="${p.rushTD}" onchange="upd('${t.abbr}','rushTD',this.value)" onclick="event.stopPropagation()"></div></div></div><div><div class="derived-block"><h4>Derived</h4><div class="derived-chips" id="dc-${t.abbr}"><div class="dchip"><div class="dchip-val">${d.plays}</div><div class="dchip-lbl">Plays</div></div><div class="dchip"><div class="dchip-val">${d.totalTD}</div><div class="dchip-lbl">Total TDs</div></div><div class="dchip"><div class="dchip-val">${d.passRate}%</div><div class="dchip-lbl">Pass rate</div></div><div class="dchip"><div class="dchip-val">${d.passYPA}</div><div class="dchip-lbl">Pass Y/A</div></div><div class="dchip"><div class="dchip-val">${d.rushYPA}</div><div class="dchip-lbl">Rush Y/A</div></div><div class="dchip"><div class="dchip-val">${(d.totalTD/d.plays*100).toFixed(2)}</div><div class="dchip-lbl">TD/100</div></div></div></div><div class="detail-actions"><button class="btn" onclick="event.stopPropagation();resetTeam('${t.abbr}')">Reset</button></div></div></div></div>`;
+  return`<div class="detail-inner"><div class="detail-grid"><div><h4>History (PFR)</h4><table class="htable"><thead><tr><th>Yr</th><th>Plays</th><th>Pass</th><th>Rush</th><th>PaYds</th><th>RuYds</th><th>PTD</th><th>RTD</th></tr></thead><tbody>${rows}</tbody></table></div><div><h4>2026 Projection</h4><div class="fields"><div class="fld"><label>Pass att</label><input type="number" value="${p.pass}" onchange="updTeam('${t.abbr}','pass',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush att</label><input type="number" value="${p.rush}" onchange="updTeam('${t.abbr}','rush',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Pass yards</label><input type="number" value="${p.passYds}" onchange="updTeam('${t.abbr}','passYds',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush yards</label><input type="number" value="${p.rushYds}" onchange="updTeam('${t.abbr}','rushYds',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Pass TDs</label><input type="number" step="0.5" value="${p.passTD}" onchange="updTeam('${t.abbr}','passTD',this.value)" onclick="event.stopPropagation()"></div><div class="fld"><label>Rush TDs</label><input type="number" step="0.5" value="${p.rushTD}" onchange="updTeam('${t.abbr}','rushTD',this.value)" onclick="event.stopPropagation()"></div></div></div><div><div class="derived-block"><h4>Derived</h4><div class="derived-chips" id="dc-${t.abbr}"><div class="dchip"><div class="dchip-val">${d.plays}</div><div class="dchip-lbl">Plays</div></div><div class="dchip"><div class="dchip-val">${d.totalTD}</div><div class="dchip-lbl">Total TDs</div></div><div class="dchip"><div class="dchip-val">${d.passRate}%</div><div class="dchip-lbl">Pass rate</div></div><div class="dchip"><div class="dchip-val">${d.passYPA}</div><div class="dchip-lbl">Pass Y/A</div></div><div class="dchip"><div class="dchip-val">${d.rushYPA}</div><div class="dchip-lbl">Rush Y/A</div></div><div class="dchip"><div class="dchip-val">${(d.totalTD/d.plays*100).toFixed(2)}</div><div class="dchip-lbl">TD/100</div></div></div></div><div class="detail-actions"><button class="btn" onclick="event.stopPropagation();resetTeam('${t.abbr}')">Reset</button></div></div></div></div>`;
 }
 
-function upd(abbr,field,val){
-  proj[abbr][field]=parseFloat(val)||0;proj[abbr].mod=true;
-  const p=proj[abbr],d=derived(p);
+function updTeam(abbr,field,val){
+  teamProj[abbr][field]=parseFloat(val)||0; teamProj[abbr].mod=true;
+  const p=teamProj[abbr],d=teamDerived(p);
   const dc=document.getElementById('dc-'+abbr);
   if(dc){const c=dc.querySelectorAll('.dchip-val');if(c[0])c[0].textContent=d.plays;if(c[1])c[1].textContent=d.totalTD;if(c[2])c[2].textContent=d.passRate+'%';if(c[3])c[3].textContent=d.passYPA;if(c[4])c[4].textContent=d.rushYPA;if(c[5])c[5].textContent=(d.totalTD/d.plays*100).toFixed(2);}
-  summary();scheduleSave();
+  renderSummary(); scheduleSave();
 }
 
-function resetTeam(abbr){proj[abbr]=defaultProj(TEAMS.find(t=>t.abbr===abbr));scheduleSave();render();}
+function resetTeam(abbr){teamProj[abbr]=defaultTeamProj(TEAMS.find(t=>t.abbr===abbr));scheduleSave();renderTab1();}
 
 function resetAll(){
   if(!confirm('Reset all projections to defaults?'))return;
-  TEAMS.forEach(t=>{proj[t.abbr]=defaultProj(t);});
+  TEAMS.forEach(t=>{teamProj[t.abbr]=defaultTeamProj(t);shareProj[t.abbr]=defaultShares(t.abbr);});
   try{localStorage.removeItem(KEY);}catch(e){}
-  setSave('saved','Reset to defaults');render();
+  setSave('saved','Reset to defaults');renderTab1();renderTeamList();if(selectedTeam)renderPlayerShares(selectedTeam);
 }
 
-function summary(){
-  const all=TEAMS.map(t=>proj[t.abbr]);
+function renderSummary(){
+  const all=TEAMS.map(t=>teamProj[t.abbr]);
   const avgPlays=Math.round(all.reduce((s,p)=>s+p.rush+p.pass,0)/all.length);
   const avgTDs=parseFloat((all.reduce((s,p)=>s+p.rushTD+p.passTD,0)/all.length).toFixed(1));
   const avgPass=(all.reduce((s,p)=>s+p.pass/(p.rush+p.pass)*100,0)/all.length).toFixed(1);
@@ -293,6 +835,232 @@ function summary(){
   document.getElementById('sumRow').innerHTML=`<div class="sum-card"><div class="sum-lbl">Avg total plays</div><div class="sum-val">${avgPlays}</div><div class="sum-sub">per team</div></div><div class="sum-card"><div class="sum-lbl">Avg total TDs</div><div class="sum-val">${avgTDs}</div><div class="sum-sub">rush + pass</div></div><div class="sum-card"><div class="sum-lbl">Avg pass rate</div><div class="sum-val">${avgPass}%</div><div class="sum-sub">league-wide</div></div><div class="sum-card"><div class="sum-lbl">Teams modified</div><div class="sum-val">${mod}</div><div class="sum-sub">of 32 total</div></div>`;
 }
 
+// ─── TAB 2 ───────────────────────────────────────────────────────────────────
+function renderTeamList() {
+  const q = (document.getElementById('srch2')?.value||'').toLowerCase();
+  const list = TEAMS.filter(t=>t.name.toLowerCase().includes(q)||t.abbr.toLowerCase().includes(q));
+  const el = document.getElementById('teamList'); el.innerHTML='';
+  list.forEach(t=>{
+    const fpts = teamTotalFpts(t.abbr);
+    const div = document.createElement('div');
+    div.className='team-list-item'+(selectedTeam===t.abbr?' active':'');
+    div.innerHTML=`<div class="tl-badge" style="background:${t.bg};color:${t.color}">${t.abbr}</div><div class="tl-name">${t.name}</div><div class="tl-pts">${fpts}</div>`;
+    div.onclick=()=>{ selectedTeam=t.abbr; renderTeamList(); renderPlayerShares(t.abbr); };
+    el.appendChild(div);
+  });
+}
+
+function updShare(abbr, pos, idx, field, val) {
+  shareProj[abbr][pos][idx][field] = parseFloat(val)||0;
+  renderPlayerShares(abbr);
+  renderTeamList();
+  scheduleSave();
+}
+
+function renderPlayerShares(abbr) {
+  const t = TEAMS.find(x=>x.abbr===abbr);
+  const tp = teamProj[abbr];
+  const stats = calcPlayerStats(abbr);
+  const panel = document.getElementById('psPanel');
+
+  // Total fpts
+  let totalFpts = 0;
+  ['QB','RB','WR','TE'].forEach(pos=>stats[pos].forEach(p=>totalFpts+=p.fpts));
+
+  // Share totals
+  const rbRushTotal = shareProj[abbr].RB.reduce((s,x)=>s+(x.rushShare||0),0);
+  const rbRecTotal = shareProj[abbr].RB.reduce((s,x)=>s+(x.recShare||0),0);
+  const wrRecTotal = shareProj[abbr].WR.reduce((s,x)=>s+(x.recShare||0),0);
+  const teRecTotal = shareProj[abbr].TE.reduce((s,x)=>s+(x.recShare||0),0);
+
+  const shareWarn = (tot,target,tol=5) => Math.abs(tot-target)<=tol ? 'ok' : 'warn';
+
+  let html = `
+  <div class="ps-team-header">
+    <div class="abbr-badge" style="background:${t.bg};color:${t.color};width:42px;height:42px;font-size:12px">${t.abbr}</div>
+    <div><div class="ps-team-name">${t.name}</div><div class="ps-team-meta">${tp.pass} pass att · ${tp.rush} rush att · ${tp.passTD} pass TD · ${tp.rushTD} rush TD</div></div>
+  </div>
+  <div class="ps-totals">
+    <div class="ps-total-card"><div class="ps-total-val">${Math.round(tp.passYds).toLocaleString()}</div><div class="ps-total-lbl">Pass yds</div></div>
+    <div class="ps-total-card"><div class="ps-total-val">${Math.round(tp.rushYds).toLocaleString()}</div><div class="ps-total-lbl">Rush yds</div></div>
+    <div class="ps-total-card"><div class="ps-total-val">${parseFloat((tp.passTD+tp.rushTD).toFixed(1))}</div><div class="ps-total-lbl">Total TDs</div></div>
+    <div class="ps-total-card"><div class="ps-total-val">${Math.round(totalFpts)}</div><div class="ps-total-lbl">Total fpts</div></div>
+  </div>`;
+
+  // QB section
+  html += `<div class="pos-section">
+    <div class="pos-header"><span class="pos-label">QB</span><span class="pos-share-total" style="margin-left:auto;font-size:11px;color:var(--text3)">pass% · rush%</span></div>
+    <div class="player-row qb-row header-row"><div>Player</div><div style="text-align:right">Pass%</div><div style="text-align:right">Rush%</div><div style="text-align:right">Pass yds</div><div style="text-align:right">Fpts</div></div>`;
+  stats.QB.forEach((p,i)=>{
+    html+=`<div class="player-row qb-row">
+      <div><div class="player-name">${p.name}</div><div class="player-depth">QB${p.depth}</div></div>
+      <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.passShare||0}" onchange="updShare('${abbr}','QB',${i},'passShare',this.value)"></div>
+      <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.rushShare||0}" onchange="updShare('${abbr}','QB',${i},'rushShare',this.value)"></div>
+      <div class="proj-val ${p.fpts>0?'highlight':''}">${p.passYds.toLocaleString()}</div>
+      <div class="fpts-val fpts-pos">${p.fpts}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // RB section
+  html += `<div class="pos-section">
+    <div class="pos-header"><span class="pos-label">RB</span>
+      <span class="pos-share-total ${shareWarn(rbRushTotal,100)}" style="margin-left:8px">Rush: ${rbRushTotal}%</span>
+      <span class="pos-share-total ${shareWarn(rbRecTotal,8)}" style="margin-left:8px">Rec: ${rbRecTotal}%</span>
+    </div>
+    <div class="player-row rb-row header-row"><div>Player</div><div style="text-align:right">Rush%</div><div style="text-align:right">Rec%</div><div style="text-align:right">Carries</div><div style="text-align:right">Rush yds</div><div style="text-align:right">Rec</div><div style="text-align:right">Rec yds</div><div style="text-align:right">Fpts</div></div>`;
+  stats.RB.forEach((p,i)=>{
+    html+=`<div class="player-row rb-row">
+      <div><div class="player-name">${p.name}</div><div class="player-depth">RB${p.depth}</div></div>
+      <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.rushShare||0}" onchange="updShare('${abbr}','RB',${i},'rushShare',this.value)"></div>
+      <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.recShare||0}" onchange="updShare('${abbr}','RB',${i},'recShare',this.value)"></div>
+      <div class="proj-val">${p.rushAtt}</div>
+      <div class="proj-val ${p.rushYds>0?'highlight':''}">${p.rushYds}</div>
+      <div class="proj-val">${p.rec}</div>
+      <div class="proj-val">${p.recYds}</div>
+      <div class="fpts-val fpts-pos">${p.fpts}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // WR section
+  html += `<div class="pos-section">
+    <div class="pos-header"><span class="pos-label">WR</span>
+      <span class="pos-share-total ${shareWarn(wrRecTotal,67)}" style="margin-left:8px">Tgt share: ${wrRecTotal}%</span>
+    </div>
+    <div class="player-row wr-row header-row"><div>Player</div><div style="text-align:right">Tgt%</div><div style="text-align:right">Targets</div><div style="text-align:right">Rec yds</div><div style="text-align:right">Fpts</div></div>`;
+  stats.WR.forEach((p,i)=>{
+    html+=`<div class="player-row wr-row">
+      <div><div class="player-name">${p.name}</div><div class="player-depth">WR${p.depth}</div></div>
+      <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.recShare||0}" onchange="updShare('${abbr}','WR',${i},'recShare',this.value)"></div>
+      <div class="proj-val">${p.tgts}</div>
+      <div class="proj-val ${p.recYds>0?'highlight':''}">${p.recYds}</div>
+      <div class="fpts-val fpts-pos">${p.fpts}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  // TE section
+  html += `<div class="pos-section">
+    <div class="pos-header"><span class="pos-label">TE</span>
+      <span class="pos-share-total ${shareWarn(teRecTotal,17)}" style="margin-left:8px">Tgt share: ${teRecTotal}%</span>
+    </div>
+    <div class="player-row te-row header-row"><div>Player</div><div style="text-align:right">Tgt%</div><div style="text-align:right">Targets</div><div style="text-align:right">Rec yds</div><div style="text-align:right">Fpts</div></div>`;
+  stats.TE.forEach((p,i)=>{
+    html+=`<div class="player-row te-row">
+      <div><div class="player-name">${p.name}</div><div class="player-depth">TE${p.depth}</div></div>
+      <div><input class="share-input" type="number" min="0" max="100" value="${p.sh.recShare||0}" onchange="updShare('${abbr}','TE',${i},'recShare',this.value)"></div>
+      <div class="proj-val">${p.tgts}</div>
+      <div class="proj-val ${p.recYds>0?'highlight':''}">${p.recYds}</div>
+      <div class="fpts-val fpts-pos">${p.fpts}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  panel.innerHTML = html;
+}
+
+
+// ─── TAB 3 PLAYER RANKINGS ───────────────────────────────────────────────────
+let posFilter = 'ALL';
+let rankSortCol = 'fpts';
+let rankSortDir = -1;
+
+function setPosFilter(btn) {
+  document.querySelectorAll('#posPills .pill').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  posFilter = btn.dataset.pos;
+  renderRankings();
+}
+
+function setRankSort(col) {
+  rankSortDir = rankSortCol === col ? rankSortDir * -1 : -1;
+  rankSortCol = col;
+  renderRankings();
+}
+
+function getAllPlayers() {
+  const players = [];
+  TEAMS.forEach(t => {
+    const stats = calcPlayerStats(t.abbr);
+    ['QB','RB','WR','TE'].forEach(pos => {
+      stats[pos].forEach(p => {
+        let tds = 0;
+        if(pos==='QB') tds = parseFloat(((p.passTD||0)+(p.rushTD||0)).toFixed(1));
+        else if(pos==='RB') tds = parseFloat(((p.rushTD||0)+(p.recTD||0)).toFixed(1));
+        else tds = parseFloat((p.recTD||0).toFixed(1));
+        players.push({
+          name: p.name, pos, team: t.abbr, depth: p.depth,
+          fpts: p.fpts,
+          passYds: p.passYds||0, rushYds: p.rushYds||0, recYds: p.recYds||0,
+          tds,
+          color: t.color, bg: t.bg
+        });
+      });
+    });
+  });
+  return players;
+}
+
+function renderRankings() {
+  const q = (document.getElementById('srch3')?.value||'').toLowerCase();
+  let players = getAllPlayers();
+
+  // Filter
+  players = players.filter(p => {
+    const matchPos = posFilter === 'ALL' || p.pos === posFilter;
+    const matchQ = !q || p.name.toLowerCase().includes(q) || p.team.toLowerCase().includes(q);
+    return matchPos && matchQ;
+  });
+
+  // Compute positional ranks (on full unfiltered set by position)
+  const allByPos = {};
+  getAllPlayers().forEach(p => {
+    if(!allByPos[p.pos]) allByPos[p.pos] = [];
+    allByPos[p.pos].push(p);
+  });
+  ['QB','RB','WR','TE'].forEach(pos => {
+    allByPos[pos].sort((a,b) => b.fpts - a.fpts);
+    allByPos[pos].forEach((p,i) => { p.posRank = i+1; });
+  });
+  // Apply posRank to filtered players
+  players.forEach(p => {
+    const idx = allByPos[p.pos].findIndex(x => x.name === p.name && x.team === p.team);
+    p.posRank = idx + 1;
+  });
+
+  // Sort
+  players.sort((a,b) => {
+    const av = a[rankSortCol], bv = b[rankSortCol];
+    if(typeof av === 'string') return av.localeCompare(bv) * rankSortDir;
+    return (bv - av) * -rankSortDir;
+  });
+
+  // Render
+  const tb = document.getElementById('tbody3');
+  if(!tb) return;
+  tb.innerHTML = '';
+  players.forEach((p, i) => {
+    const overallRank = i + 1;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="rank-num">${overallRank}</td>
+      <td style="text-align:left;padding-left:12px;font-size:13px;font-weight:500">${p.name}</td>
+      <td style="text-align:center"><span class="pos-tag ${p.pos}">${p.pos}</span></td>
+      <td style="text-align:right"><span class="pos-rank-badge">${p.pos}${p.posRank}</span></td>
+      <td style="text-align:center"><span class="abbr-badge" style="background:${p.bg};color:${p.color};width:28px;height:20px;font-size:9px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center">${p.team}</span></td>
+      <td style="text-align:right"><span class="fpts-big">${p.fpts}</span></td>
+      <td style="text-align:right;font-size:12px;color:var(--text2)">${p.passYds > 0 ? p.passYds.toLocaleString() : '—'}</td>
+      <td style="text-align:right;font-size:12px;color:var(--text2)">${p.rushYds > 0 ? p.rushYds : '—'}</td>
+      <td style="text-align:right;font-size:12px;color:var(--text2)">${p.recYds > 0 ? p.recYds : '—'}</td>
+      <td style="text-align:right;font-size:12px;color:var(--text2)">${p.tds > 0 ? p.tds : '—'}</td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+showTab(1);
 load();
 </script>
 </body>
